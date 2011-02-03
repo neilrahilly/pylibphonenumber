@@ -1,0 +1,19 @@
+
+ TODO: 2 - 4 tabs (do in vim)
+ { => :
+ erase }
+ } else { => elif:
+ if (\(.*\)): = if \1:
+ make "# /**" => """
+ make "# # " => "    " <- can't do this for whole block
+ make "# */" => """
+ test getting protobufs - get tests working
+ this. => self.
+ var => ""
+ ![^=] => not
+
+ do true, false => True, False
+ regexp ([\w_]+)_\b => _\1
+ make macro for comments
+ remember to check as you go
+
