@@ -22,6 +22,10 @@ import cStringIO as StringIO
 import os.path
 import re
 
+from phonenumbers import metadata
+from phonenumbers import phonemetadata_pb2
+from phonenumbers import phonenumber_pb2
+
 
 class Error(Exception):
     pass
@@ -66,9 +70,8 @@ _MIN_LENGTH_FOR_NSN = 3
 _MAX_LENGTH_FOR_NSN = 15
 
 META_DATA_FILE_PREFIX = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), "data")
-
-COUNTRY_CODE_TO_REGION_CODE_MAP_CLASS_NAME = "CountryCodeToRegionCodeMap"
+    os.path.abspath(os.path.dirname(__file__)), "data",
+    "PhoneNumberMetadataProto")
 
 _NANPA_COUNTRY_CODE = 1
 
@@ -374,27 +377,24 @@ VALIDATION_RESULT_INVALID_COUNTRY_CODE = 1
 VALIDATION_RESULT_TOO_SHORT = 2
 VALIDATION_RESULT_TOO_LONG = 3
 
+# Init stuff from Java version getInstance()
+supported_countries = []
+for region_codes in metadata.country_code_to_region_code_map.values():
+    supported_countries.extend(region_codes)
+nanpa_countries = \
+    metadata.country_code_to_region_code_map.get(_NANPA_COUNTRY_CODE)
 
-def _init(file_prefix):
-    for region_codes in COUNTRY_CODE_TO_REGION_CODE_MAP.values():
-        supported_countries.extend(region_codes)
-    nanpa_countries.extend(
-        COUNTRY_CODE_TO_REGION_CODE_MAP.get(NANPA_COUNTRY_CODE))
-
-_init(META_DATA_FILE_PREFIX)
-
+print supported_countries
+print nanpa_countries
 
 def _load_metadata_for_region_from_file(file_prefix, region_code):
-    try:
-        source = open(file_prefex + "_" + region_code)
-        metadata_collection.read_external(source)
-        for metadata in metadata_collection.get_metadata_list():
-            _country_to_metadata_map[region_code] = metadata
-    except Exception, e:
-        logging.warn(e)
-    finally:
-        source.close()
+    source = open(file_prefix + "_" + region_code, "r")
+    metadata_collection = phonemetadata_pb2.PhoneMetadataCollection()
+    metadata_collection.read_external(source)
+    for metadata in metadata_collection.get_metadata_list():
+        _country_to_metadata_map[region_code] = metadata
 
+_load_metadata_for_region_from_file(META_DATA_FILE_PREFIX, supported_countries[0])
 
 def extract_possible_number(number):
     """Attempts to extract a possible number from the string passed in.
