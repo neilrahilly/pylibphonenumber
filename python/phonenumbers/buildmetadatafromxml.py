@@ -128,7 +128,6 @@ def _load_country_metadata(region_code, element, metadata):
             format.domestic_carrier_code_formatting_rule = \
                     carrier_code_formatting_rule
         _set_leading_digits_patterns(number_format_element, format)
-
         format.pattern = _validate_re(number_format_element.attrib["pattern"])
         format_pattern = number_format_element.findall("format")
         if len(format_pattern) != 1:
@@ -136,8 +135,8 @@ def _load_country_metadata(region_code, element, metadata):
                          "element should be defined.")
             raise Exception("Invalid number of format patterns for "
                             "country: %s" % region_code)
-        metadata.number_format.add().format = \
-                _validate_re(format_pattern[0].text)
+        format.format = _validate_re(format_pattern[0].text)
+        metadata.number_format.add().CopyFrom(format)
 
     for intl_number_format_element in element.getiterator("intlNumberFormat"):
         format = phonemetadata_pb2.NumberFormat()

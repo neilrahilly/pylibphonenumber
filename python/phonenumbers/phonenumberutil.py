@@ -26,6 +26,8 @@ from phonenumbers import metadata_gen
 from phonenumbers import phonemetadata_pb2
 from phonenumbers import phonenumber_pb2
 
+COUNTRY_CODE_TO_REGION_CODE_MAP_NAME = "country_code_to_region_code_map"
+
 
 class Error(Exception):
     pass
@@ -71,7 +73,7 @@ _MAX_LENGTH_FOR_NSN = 15
 
 META_DATA_FILE_PREFIX = os.path.join(
     os.path.abspath(os.path.dirname(__file__)), "data",
-    "PhoneNumberMetadataProto")
+    "phonenumbermetadataproto")
 
 _NANPA_COUNTRY_CODE = 1
 
@@ -386,16 +388,13 @@ nanpa_countries = \
 
 
 def _load_metadata_for_region_from_file(file_prefix, region_code):
-    print file_prefix + "_" + region_code
-    source = open(file_prefix + "_" + region_code, "r")
+    source = open(file_prefix + "_" + region_code, "rb")
     metadata_collection = phonemetadata_pb2.PhoneMetadataCollection()
-    print dir(metadata_collection)
-    print metadata_collection.ParseFromString(source.read())
-#    metadata_collection.
-#    for metadata in metadata_collection.:
-#        _country_to_metadata_map[region_code] = metadata
+    metadata_collection.ParseFromString(source.read())
+    for metadata in metadata_collection.metadata:
+        _country_to_metadata_map[region_code] = metadata
 
-_load_metadata_for_region_from_file(META_DATA_FILE_PREFIX, supported_countries[0])
+#_load_metadata_for_region_from_file(META_DATA_FILE_PREFIX, supported_countries[0])
 
 def extract_possible_number(number):
     """Attempts to extract a possible number from the string passed in.

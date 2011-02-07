@@ -23,6 +23,8 @@ import pprint
 
 from phonenumbers import buildmetadatafromxml
 from phonenumbers import phonemetadata_pb2
+from phonenumbers import phonenumberutil
+from phonenumbers.test import phonenumberutil_test
 
 
 USAGE = """Example command line invocation:
@@ -84,9 +86,10 @@ def main():
 
     # Generate metadata proto files
     if for_testing:
-        file_prefix = output_dir + PhoneNumberUtilTest.TEST_META_DATA_FILE_PREFIX
+        file_prefix = \
+                output_dir + phonenumberutil_test.TEST_META_DATA_FILE_PREFIX
     else:
-        file_prefix = output_dir + PhoneNumberUtil.META_DATA_FILE_PREFIX
+        file_prefix = output_dir + phonenumberutil.META_DATA_FILE_PREFIX
 
     metadata_collection = buildmetadatafromxml.build_phone_metadata_collection(
             input_file, lite_build)
@@ -94,27 +97,30 @@ def main():
     for metadata in metadata_collection.metadata:
         region_code = metadata.id
         out_metadata_collection = phonemetadata_pb2.PhoneMetadataCollection()
-        out_metadata_collection.metadata.extend([metadata])
-        try:
-            output_for_region = open(
-                    os.path.join(file_prefix, "_" + region_code), "w")
-        finally:
-            output_for_region.close()
+        out_metadata_collection.metadata.add().CopyFrom(metadata)
+        output_filename = os.path.join((file_prefix + "_" + region_code)[1:]) 
+        output_for_region = open(output_filename, "wb")
+        output_for_region.write(
+                out_metadata_collection.SerializeToString())
+        output_for_region.close()
     
     # Generate countrycodetoregioncodemap.py module
     country_code_to_region_code_map = \
-            build_country_code_to_region_code_map(metadata_collection)
-    write_country_calling_code_mapping_to_python_file(
+            buildmetadatafromxml.build_country_code_to_region_code_map(
+                    metadata_collection)
+    _write_country_calling_code_mapping_to_python_file(
             country_code_to_region_code_map, output_dir, for_testing)
 
 
 def _write_country_calling_code_mapping_to_python_file(
             country_code_to_region_code_map, output_dir, for_testing):
     mapping_name = phonenumberutil.COUNTRY_CODE_TO_REGION_CODE_MAP_NAME
+    module_name = mapping_name.replace("_", "")
+    
     if for_testing:
         mapping_name += "_test"
     try:
-        mapping_file_name = os.path.join(output_dir, MODULE_NAME)
+        mapping_file_name = os.path.join(output_dir, module_name)
         mapping_file = open(mapping_file_name, "w")
         mapping_file.write(COPYRIGHT_NOTICE) 
         mapping_file.write(MAPPING_COMMENT)

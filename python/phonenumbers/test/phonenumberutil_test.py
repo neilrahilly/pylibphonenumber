@@ -14,9 +14,13 @@
 
 """Unit tests for phonenumberutil."""
 
+import os.path
 import unittest
 
 from phonenumbers import phonenumberutil
+
+
+TEST_META_DATA_FILE_PREFIX = phonenumberutil.META_DATA_FILE_PREFIX + "_test"
 
 
 class PhoneNumberUtilTest(unittest.TestCase):
@@ -24,31 +28,32 @@ class PhoneNumberUtilTest(unittest.TestCase):
         # In Java and JavaScript a singleton class is used. We use a module
         # in Python, so reloading is like getInstance().
         reload(phonenumberutil)
-        phonenumberutil.get_metadata_for_region("US")
-        self.assertEquals("US", metadata.get_id())
-        self.assertEquals(1, metadata.get_country_code());
-        self.assertEquals("011", metadata.get_international_prefix());
-        self.assertTrue(metadata.has_national_prefix());
-        self.assertEquals(2, metadata.get_number_format_count());
+        metadata = phonenumberutil.get_metadata_for_region("US")
+        print metadata
+        self.assertEquals("US", metadata.id)
+        self.assertEquals(1, metadata.country_code);
+        self.assertEquals("011", metadata.international_prefix);
+        self.assertTrue(metadata.HasField("national_prefix"));
+        self.assertEquals(2, len(metadata.number_format));
         self.assertEquals("(\\d{3})(\\d{3})(\\d{4})",
-                metadata.get_number_format(0).get_pattern());
+                metadata.number_format[0].pattern);
         self.assertEquals("$1 $2 $3", 
-                metadata.get_number_format(0).get_format());
+                metadata.number_format[0].format);
         self.assertEquals("[13-9]\\d{9}|2[0-35-9]\\d{8}",
-                metadata.get_general_desc().get_national_number_pattern());
+                metadata.general_desc.national_number_pattern);
         self.assertEquals("\\d{7,10}", 
-                metadata.get_general_desc().get_possible_number_pattern());
-        self.assertTrue(metadata.get_general_desc().exactly_same_as(
-                metadata.get_fixed_line()));
+                metadata.general_desc.possible_number_pattern);
+        self.assertTrue(metadata.general_desc.exactly_same_as(
+                metadata.fixed_line));
         self.assertEquals("\\d{10}", 
-                metadata.get_toll_free().get_possible_number_pattern());
+                metadata.toll_free.possible_number_pattern);
         self.assertEquals("900\\d{7}", 
-                metadata.get_premium_rate().get_national_number_pattern());
+                metadata.premium_rate.national_number_pattern);
         # No shared-cost data is available, so it should be initialised to "NA".
         self.assertEquals("NA", 
-                metadata.get_shared_cost().get_national_number_pattern());
+                metadata.shared_cost.national_number_pattern);
         self.assertEquals("NA", 
-                metadata.get_shared_cost().get_possible_number_pattern());
+                metadata.shared_cost.possible_number_pattern);
 
 
 if __name__ == "__main__":
