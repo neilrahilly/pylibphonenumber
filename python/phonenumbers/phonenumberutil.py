@@ -614,12 +614,13 @@ def get_length_of_national_destination_code(number):
         # include the extension when we format it, so we copy it and clear the
         # extension here.
         copied_proto = phonenumber_pb2.PhoneNumber()
-        copied_proto.merge_from(number)
-        copied_proto.clear_extension()
+        copied_proto.MergeFrom(number)
+        copied_proto.ClearField("extension")
     else:
         copied_proto = number
 
     national_significant_number = format(copied_proto, FORMAT_INTERNATIONAL)
+
     number_groups = _NON_DIGITS_PATTERN.split(national_significant_number)
     
     # The pattern will start with '+COUNTRY_CODE ' so the first group will always
@@ -666,7 +667,7 @@ def _normalize_helper(number, normalization_replacements, remove_non_matches):
         elif not remove_non_matches:
                 normalized_number.append(character)
         # If neither of the above are true, we remove this character.
-    return "".join(normalized_number)
+    return u"".join(normalized_number)
 
 
 def _is_valid_region_code(region_code):
@@ -715,6 +716,7 @@ def format(number, number_format):
     if not _is_valid_region_code(region_code):
         return national_significant_number
     
+    # FIXME: We're good up to here
     formatted_extension = _maybe_get_formatted_extension(number, region_code)
     formatted_national_number = _format_national_number(
             national_significant_number, region_code, number_format)
@@ -752,43 +754,42 @@ def format_by_pattern(number, number_format, user_defined_formats):
     user_defined_formats_copy = []
     for num_format in user_defined_formats:
         national_prefix_formatting_rule = \
-                num_format.get_national_prefix_formatting_rule_or_default()
-        if len(national_prefix_formatting_rule) > 0:
+                num_format.national_prefix_formatting_rule
+        if national_prefix_formatting_rule:
     
             # Before we do a replacement of the national prefix pattern $NP
             # with the national prefix, we need to copy the rule so that
             # subsequent replacements for different numbers have the
             # appropriate national prefix.
             num_format_copy = phonemetadata_pb2.NumberFormat()
-            num_format_copy.merge_from(num_format)
+            num_format_copy.MergeFrom(num_format)
             national_prefix = \
-        get_metadata_for_region(region_code).get_national_prefix_or_default()
-            if len(national_prefix) > 0:
+                    get_metadata_for_region(region_code).national_prefix
+            if national_prefix:
                 # Replace $NP with national prefix and $FG with the first
                 # group ($1).
                 national_prefix_formatting_rule = _NP_PATTERN.sub(
                         national_prefix, national_prefix_formatting_rule)
                 national_prefix_formatting_rule = _FG_PATTERN.sub(
                         u"$1", national_prefix_formatting_rule)
-                num_format_copy.set_national_prefix_formatting_rule(
-                        national_prefix_formatting_rule)
+                num_format_copy.national_prefix_formatting_rule = \
+                        national_prefix_formatting_rule
             else:
                 # We don't want to have a rule for how to format the national
                 # prefix if there isn't one.
-                num_format_copy.clear_national_prefix_formatting_rule()
+                num_format_copy.ClearField("national_prefix_formatting_rule")
             
             user_defined_formats_copy.append(num_format_copy)
         else:
             # Otherwise, we just add the original rule to the modified list of
             # formats.
             user_defined_formats_copy.append(num_format)
-
-    formatted_extension = _maybe_get_formatted_extension(number, region_code)
-    formatted_national_number = _format_according_to_formats(
+    formatted_number = _format_according_to_formats(
             national_significant_number, user_defined_formats_copy, 
             number_format)
+    _maybe_get_formatted_extension(number, region_code, formatted_number)
     return _format_number_by_format(country_code, number_format, 
-            formatted_national_number, formatted_extension)
+            formatted_number)
 
 
 def format_national_number_with_carrier_code(number, carrier_code):
@@ -1195,44 +1196,44 @@ def _maybe_get_formatted_extension(number, region_code):
 #
 #
 def _get_number_type_helper(national_number, metadata):
-   general_number_desc = metadata.general_desc
-   if (not general_number_desc.HasField("national_number_pattern") or
-       not _is_number_matching_desc(national_number, general_number_desc)):
-       return TYPE_UNKNOWN
-
-   if _is_number_matching_desc(national_number, metadata.premium_rate):
-       return TYPE_PREMIUM_RATE
-   
-   if _is_number_matching_desc(national_number, metadata.toll_free):
-       return TYPE_TOLL_FREE
-   
-   if _is_number_matching_desc(national_number, metadata.shared_cost):
-       return TYPE_SHARED_COST
-   
-   if _is_number_matching_desc(national_number, metadata.voip):
-       return TYPE_VOIP
-   
-   if (_is_number_matching_desc(national_number, metadata.personal_number)):
-       return TYPE_PERSONAL_NUMBER
-   
-   if (_is_number_matching_desc(national_number, metadata.pager)):
-       return TYPE_PAGER
-
-   is_fixed_line = _is_number_matching_desc(national_number, metadata.fixed_line)
-   if is_fixed_line:
-       if metadata.same_mobile_and_fixed_line_pattern:
-           return TYPE_FIXED_LINE_OR_MOBILE
-       elif _is_number_matching_desc(national_number, metadata.mobile):
-           return TYPE_FIXED_LINE_OR_MOBILE
-       return TYPE_FIXED_LINE
-   
-   # Otherwise, test to see if the number is mobile. Only do this if certain
-   # that the patterns for mobile and fixed line aren't the same.
-   if (not metadata.same_mobile_and_fixed_line_pattern and
-       _is_number_matching_desc(national_number, metadata.mobile)):
-       return TYPE_MOBILE
-   
-   return TYPE_UNKNOWN
+    general_number_desc = metadata.general_desc
+    if (not general_number_desc.HasField("national_number_pattern") or
+        not _is_number_matching_desc(national_number, general_number_desc)):
+        return TYPE_UNKNOWN
+ 
+    if _is_number_matching_desc(national_number, metadata.premium_rate):
+        return TYPE_PREMIUM_RATE
+    
+    if _is_number_matching_desc(national_number, metadata.toll_free):
+        return TYPE_TOLL_FREE
+    
+    if _is_number_matching_desc(national_number, metadata.shared_cost):
+        return TYPE_SHARED_COST
+    
+    if _is_number_matching_desc(national_number, metadata.voip):
+        return TYPE_VOIP
+    
+    if (_is_number_matching_desc(national_number, metadata.personal_number)):
+        return TYPE_PERSONAL_NUMBER
+    
+    if (_is_number_matching_desc(national_number, metadata.pager)):
+        return TYPE_PAGER
+ 
+    is_fixed_line = _is_number_matching_desc(national_number, metadata.fixed_line)
+    if is_fixed_line:
+        if metadata.same_mobile_and_fixed_line_pattern:
+            return TYPE_FIXED_LINE_OR_MOBILE
+        elif _is_number_matching_desc(national_number, metadata.mobile):
+            return TYPE_FIXED_LINE_OR_MOBILE
+        return TYPE_FIXED_LINE
+    
+    # Otherwise, test to see if the number is mobile. Only do this if certain
+    # that the patterns for mobile and fixed line aren't the same.
+    if (not metadata.same_mobile_and_fixed_line_pattern and
+        _is_number_matching_desc(national_number, metadata.mobile)):
+        return TYPE_MOBILE
+    
+    return TYPE_UNKNOWN
 
 
 def get_metadata_for_region(region_code):
@@ -1245,9 +1246,9 @@ def get_metadata_for_region(region_code):
 
 
 def _is_number_matching_desc(national_number, number_desc):
-   return (_matches_entirely(
+    return (_matches_entirely(
                 number_desc.possible_number_pattern, national_number) and
-           _matches_entirely(
+            _matches_entirely(
                 number_desc.national_number_pattern, national_number))
 
 #/**

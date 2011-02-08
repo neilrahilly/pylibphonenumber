@@ -106,7 +106,7 @@ class PhoneNumberUtilTest(unittest.TestCase):
         number.national_number = 6502530000
         self.assertEquals(3, 
             phonenumberutil.get_length_of_geographical_area_code(number))
-        
+
         # A North America toll-free number, which has no area code.
         number.country_code = 1
         number.national_number = 8002530000
