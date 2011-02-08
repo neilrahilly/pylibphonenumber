@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2010 Neil Rahilly <neilrahilly@gmail.com>
 # 
 # Licensed under the Apache License, Version 2.0 (the "License")

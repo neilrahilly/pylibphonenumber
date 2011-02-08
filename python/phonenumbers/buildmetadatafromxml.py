@@ -175,10 +175,10 @@ def _load_country_metadata(region_code, element, metadata):
     metadata.voip.CopyFrom(_process_phone_number_desc_element(
             general_desc, element, "voip"))
     metadata.personal_number.CopyFrom(_process_phone_number_desc_element(
-            general_desc, element, "personal_number"))
+            general_desc, element, "personalNumber"))
     metadata.pager.CopyFrom(_process_phone_number_desc_element(
             general_desc, element, "pager"))
-
+    
     if (metadata.mobile.national_number_pattern ==
             metadata.fixed_line.national_number_pattern):
         metadata.same_mobile_and_fixed_line_pattern = True
@@ -264,7 +264,6 @@ def _process_phone_number_desc_element(general_desc, country_element, number_typ
             example_number = element.findall("exampleNumber")
             if example_number:
                 number_desc.example_number = example_number[0].text
-
     return number_desc
 
 
