@@ -340,6 +340,11 @@ class PhoneNumberDesc(message.Message):
   DESCRIPTOR = _PHONENUMBERDESC
   
   # @@protoc_insertion_point(class_scope:i18n.phonenumbers.PhoneNumberDesc)
+  def exactly_same_as(self, other):
+    return (self.national_number_pattern == other.national_number_pattern and
+            self.possible_number_pattern == other.possible_number_pattern and
+            self.example_number == other.example_number)
+  
 
 class PhoneMetadata(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType

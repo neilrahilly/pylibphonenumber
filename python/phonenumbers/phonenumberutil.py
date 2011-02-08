@@ -75,6 +75,13 @@ META_DATA_FILE_PREFIX = os.path.join(
     os.path.abspath(os.path.dirname(__file__)), "data",
     "phonenumbermetadataproto")
 
+_file_prefix = META_DATA_FILE_PREFIX
+
+
+def set_file_prefix(file_prefix):
+    global _file_prefix
+    _file_prefix = file_prefix
+
 _NANPA_COUNTRY_CODE = 1
 
 # The PLUS_SIGN signifies the international prefix.
@@ -387,14 +394,12 @@ nanpa_countries = \
     metadata_gen.country_code_to_region_code_map.get(_NANPA_COUNTRY_CODE)
 
 
-def _load_metadata_for_region_from_file(file_prefix, region_code):
-    source = open(file_prefix + "_" + region_code, "rb")
+def _load_metadata_for_region_from_file(region_code):
+    source = open(_file_prefix + "_" + region_code, "rb")
     metadata_collection = phonemetadata_pb2.PhoneMetadataCollection()
     metadata_collection.ParseFromString(source.read())
     for metadata in metadata_collection.metadata:
         _country_to_metadata_map[region_code] = metadata
-
-#_load_metadata_for_region_from_file(META_DATA_FILE_PREFIX, supported_countries[0])
 
 def extract_possible_number(number):
     """Attempts to extract a possible number from the string passed in.
@@ -1282,8 +1287,7 @@ def get_metadata_for_region(region_code):
         return
     region_code = region_code.upper()
     if not region_code in _country_to_metadata_map:
-        _load_metadata_for_region_from_file(
-                META_DATA_FILE_PREFIX, region_code)
+        _load_metadata_for_region_from_file(region_code)
 #        metadata_serialized = \
 #            metadata_gen.country_to_metadata.get(region_code)
 #        if not metadata_serialized:

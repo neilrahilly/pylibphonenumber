@@ -1,0 +1,21 @@
+We need to add exactly_same_as() methods to i18n.phonenumbers.PhoneNumber and 
+i18n.phonenumbers.PhoneNumberDesc
+
+    # @@protoc_insertion_point(class_scope:i18n.phonenumbers.PhoneNumber)
+    def exactly_same_as(self, other):
+      return (other and
+              self.country_code == other.country_code and
+              self.national_number == other.national_number and
+              self.extension == other.extension and
+              self.italian_leading_zero == other.italian_leading_zero and
+              self.raw_input == other.raw_input and
+              self.country_code_source == other.country_code_source)
+    
+
+    # @@protoc_insertion_point(class_scope:i18n.phonenumbers.PhoneNumberDesc)  
+    def exactly_same_as(self, other):
+      return (other and 
+              self.national_number_pattern == other.national_number_pattern and
+              self.possible_number_pattern == other.possible_number_pattern and
+              self.example_number == other.example_number)
+

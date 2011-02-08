@@ -116,5 +116,14 @@ class PhoneNumber(message.Message):
   DESCRIPTOR = _PHONENUMBER
   
   # @@protoc_insertion_point(class_scope:i18n.phonenumbers.PhoneNumber)
+  def exactly_same_as(self, other):
+    return (other and
+            self.country_code == other.country_code and
+            self.national_number == other.national_number and
+            self.extension == other.extension and
+            self.italian_leading_zero == other.italian_leading_zero and
+            self.raw_input == other.raw_input and
+            self.country_code_source == other.country_code_source)
+  
 
 # @@protoc_insertion_point(module_scope)
