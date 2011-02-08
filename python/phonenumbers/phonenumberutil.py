@@ -522,7 +522,7 @@ def convert_alpha_characters_in_number(number):
 
 def get_length_of_geographical_area_code(number):
     """Gets the length of the geographical area code from the national_number
-    field of the Phone_number object passed in, so that clients could use it to
+    field of the PhoneNumber object passed in, so that clients could use it to
     split a national significant number into geographical area code and
     subscriber number.
     
@@ -545,20 +545,20 @@ def get_length_of_geographical_area_code(number):
     more general national_number instead. Read the following carefully before
     deciding to use this method:
 
-     - geographical area codes change over time, and this method honors those
-       changes therefore, it doesn't guarantee the stability of the result it
-       produces.
-     - subscriber numbers may not be diallable from all devices (notably 
-       mobile devices, which typically requires the full national_number to 
-       be dialled in most countries).
-     - most non-geographical numbers have no area codes.
-     - some geographical numbers have no area codes.
+        - geographical area codes change over time, and this method honors
+          those changes therefore, it doesn't guarantee the stability of the
+          result it produces.
+        - subscriber numbers may not be diallable from all devices (notably
+          mobile devices, which typically requires the full national_number to
+          be dialled in most countries).
+        - most non-geographical numbers have no area codes.
+        - some geographical numbers have no area codes.
     
     Args:
         number the PhoneNumber object for which clients want to know the 
         length of the area code in the national_number field.
     Returns:
-        the length of area code of the Phone_number object passed in.
+        the length of area code of the PhoneNumber object passed in.
     """
     if not number:
         return 0
@@ -566,7 +566,7 @@ def get_length_of_geographical_area_code(number):
     if not _is_valid_region_code(region_code):
         return 0
     metadata = get_metadata_for_region(region_code)
-    if not metadata.has_national_prefix():
+    if not metadata.HasField("national_prefix"):
         return 0
     type_ = _get_number_type_helper(
         get_national_significant_number(number), metadata)
@@ -577,10 +577,9 @@ def get_length_of_geographical_area_code(number):
     return get_length_of_national_destination_code(number)
 
 
-
 def get_length_of_national_destination_code(number):
     """Gets the length of the national destination code (NDC) from the
-    Phone_number object passed in, so that clients could use it to split a
+    PhoneNumber object passed in, so that clients could use it to split a
     national significant number into NDC and subscriber number. The NDC of a
     phone number is normally the first group of digit(s) right after the
     country code when the number is formatted in the international format, if
@@ -590,7 +589,7 @@ def get_length_of_national_destination_code(number):
     number = parse('18002530000', 'US')
     national_significant_number = get_national_significant_number(number)
     
-    national_destination_code_length =  \
+    national_destination_code_length = \
             get_length_of_national_destination_code(number)
     if national_destination_code_length > 0:
         national_destination_code = \
@@ -610,7 +609,7 @@ def get_length_of_national_destination_code(number):
     Returns:
         the length of NDC of the PhoneNumber object passed in.
     """
-    if number.has_extension():
+    if number.HasField("extension"):
         # We don't want to alter the proto given to us, but we don't want to
         # include the extension when we format it, so we copy it and clear the
         # extension here.
@@ -700,7 +699,7 @@ def format(number, number_format):
     Returns:
         the formatted phone number.
     """
-    country_code = number.get_country_code_or_default()
+    country_code = number.country_code
     national_significant_number = get_national_significant_number(number)
     if number_format == FORMAT_E164:
         # Early exit for E164 case since no formatting of the national 
@@ -739,7 +738,7 @@ def format_by_pattern(number, number_format, user_defined_formats):
     Returns:
         the formatted phone number.
     """
-    country_code = number.get_country_code_or_default()
+    country_code = number.country_code
     national_significant_number = get_national_significant_number(number)
     
     # Note get_region_code_for_country_code() is used because formatting
@@ -770,7 +769,7 @@ def format_by_pattern(number, number_format, user_defined_formats):
                 national_prefix_formatting_rule = _NP_PATTERN.sub(
                         national_prefix, national_prefix_formatting_rule)
                 national_prefix_formatting_rule = _FG_PATTERN.sub(
-                        "$1", national_prefix_formatting_rule)
+                        u"$1", national_prefix_formatting_rule)
                 num_format_copy.set_national_prefix_formatting_rule(
                         national_prefix_formatting_rule)
             else:
@@ -793,7 +792,7 @@ def format_by_pattern(number, number_format, user_defined_formats):
 
 
 def format_national_number_with_carrier_code(number, carrier_code):
-    country_code = number.get_country_code_or_default()
+    country_code = number.country_code
     national_significant_number = get_national_significant_number(number)
     # Note get_region_code_for_country_code() is used because formatting information
     # for countries which share a country code is contained by only one country
@@ -837,7 +836,7 @@ def format_out_of_country_calling_number(number, country_calling_from):
     """
     if not _is_valid_region_code(country_calling_from):
         return format(number, FORMAT_INTERNATIONAL)
-    country_code = number.get_country_code_or_default()
+    country_code = number.country_code
     region_code = get_region_code_for_country_code(country_code)
     national_significant_number = get_national_significant_number(number)
     if not _is_valid_region_code(region_code):
@@ -872,7 +871,7 @@ def format_out_of_country_calling_number(number, country_calling_from):
     international_prefix_for_formatting = ""
     if _matches_entirely(_UNIQUE_INTERNATIONAL_PREFIX, international_prefix):
         international_prefix_for_formatting = international_prefix
-    elif metadata.has_preferred_international_prefix():
+    elif metadata.HasField("preferred_international_prefix"):
         international_prefix_for_formatting = \
                 metadata.get_preferred_international_prefix_or_default()
     
@@ -900,7 +899,7 @@ def format_in_original_format(number, country_calling_from):
     Returns:
         the formatted phone number in its original number format.
     """
-    if not number.has_country_code_source():
+    if not number.HasField("country_code_source"):
         return format(number, FORMAT_NATIONAL)
     country_code_source = number.get_country_code_source()
     if country_code_source == \
@@ -936,10 +935,10 @@ def get_national_significant_number(number):
     # happened. See http:#en.wikipedia.org/wiki/%2B39 for more details.
     # Other countries such as Cote d'Ivoire and Gabon use this for their mobile
     # numbers.
-    national_number = str(number.get_national_number())
-    if (number.has_italian_leading_zero() and
-        number.get_italian_leading_zero() and
-        is_leading_zero_country(number.get_country_code_or_default())):
+    national_number = str(number.national_number)
+    if (number.HasField("italian_leading_zero") and
+        number.italian_leading_zero and
+        is_leading_zero_country(number.country_code)):
         return u"0" + national_number
     return national_number
 
@@ -958,125 +957,103 @@ def _format_number_by_format(country_code, number_format,
         the formatted phone number.
     """
     if number_format == FORMAT_E164:
-        return (PLUS_SIGN + country_code + formatted_national_number + 
-                formatted_extension)
+        return "%s%s%s%s" % (PLUS_SIGN, country_code, 
+                formatted_national_number, formatted_extension)
     if number_format == FORMAT_INTERNATIONAL:
-        return (PLUS_SIGN + country_code + " " + formatted_national_number + 
-                formatted_extension)
+        return "%s%s %s%s" % (PLUS_SIGN, country_code, 
+                formatted_national_number, formatted_extension)
     # Default FORMAT_NATIONAL
     return formatted_national_number + formatted_extension
 
 
-#/**
-## Note in some countries, the national number can be written in two completely
-## different ways depending on whether it forms part of the NATIONAL format or
-## INTERNATIONAL format. The number_format parameter here is used to specify
-## which format to use for those cases. If a carrier_code is specified, this will
-## be inserted into the formatted string to replace $CC.
-# *
-## number a string of characters representing a phone number.
-## region_code the ISO 3166-1 two-letter country code.
-## number_format the format the
-##           phone number should be formatted into.
-## opt_carrier_code
-## @return:string} the formatted phone number.
-## @private
-# */
-#def _format_national_number
-#        function(number, region_code, number_format, opt_carrier_code):
-#
-#    /** @type:i18n.phonenumbers.Phone_metadata} */
-#    metadata = get_metadata_for_region(region_code)
-#    /** @type:Array.<i18n.phonenumbers.Number_format>} */
-#    intl_number_formats = metadata.intl_number_format_array()
-#    # When the intl_number_formats exists, we use that to format national number
-#    # for the INTERNATIONAL format instead of using the number_desc.number_formats.
-#    /** @type:Array.<i18n.phonenumbers.Number_format>} */
-#    available_formats =
-#            (intl_number_formats.length == 0 ||
-#                    number_format == FORMAT_NATIONAL) ?
-#            metadata.number_format_array() : metadata.intl_number_format_array()
-#    return _format_according_to_formats(number, available_formats, number_format,
-#                                                                                opt_carrier_code)
-#
-#
-#
-#/**
-## Note that carrier_code is optional - if NULL or an empty string, no carrier
-## code replacement will take place. Carrier code replacement occurs before
-## national prefix replacement.
-# *
-## national_number a string of characters representing a phone
-##           number.
-## available_formats the
-##           available formats the phone number could be formatted into.
-## number_format the format the
-##           phone number should be formatted into.
-## opt_carrier_code
-## @return:string} the formatted phone number.
-## @private
-# */
-#def _format_according_to_formats
-#        function(national_number, available_formats, number_format, opt_carrier_code):
-#
-#    /** @type:i18n.phonenumbers.Number_format} */
-#    num_format
-#    /** @type:number} */
-#    l = available_formats.length
-#    for (var i = 0 i < l ++i):
-#        num_format = available_formats[i]
-#        /** @type:number} */
-#        size = num_format.leading_digits_pattern_count()
-#        if (size == 0 ||
-#                # We always use the last leading_digits_pattern, as it is the most
-#                # detailed.
-#                national_number
-#                        .search(num_format.get_leading_digits_pattern(size - 1)) == 0):
-#            /** @type:Reg_exp} */
-#            pattern_to_match = new Reg_exp(num_format.get_pattern())
-#            /** @type:string} */
-#            number_format_rule = num_format.get_format_or_default()
-#            if (_matches_entirely(pattern_to_match,
-#                                                                                                                         national_number)):
-#                if opt_carrier_code != null && opt_carrier_code.length > 0:
-#                    /** @type:string} */
-#                    domestic_carrier_code_formatting_rule =
-#                            num_format.get_domestic_carrier_code_formatting_rule_or_default()
-#                    if domestic_carrier_code_formatting_rule.length > 0:
-#                        # Replace the $CC in the formatting rule with the desired carrier
-#                        # code.
-#                        /** @type:string} */
-#                        carrier_code_formatting_rule = domestic_carrier_code_formatting_rule
-#                                .replace(_CC_PATTERN,
-#                                                 opt_carrier_code)
-#                        # Now replace the $FG in the formatting rule with the first group
-#                        # and the carrier code combined in the appropriate way.
-#                        number_format_rule = number_format_rule.replace(
-#                                _FIRST_GROUP_PATTERN,
-#                                carrier_code_formatting_rule)
-#                    
-#                
-#                /** @type:string} */
-#                national_prefix_formatting_rule =
-#                        num_format.get_national_prefix_formatting_rule_or_default()
-#                if (number_format == FORMAT_NATIONAL &&
-#                        national_prefix_formatting_rule != null &&
-#                        national_prefix_formatting_rule.length > 0):
-#                    return national_number.replace(pattern_to_match, number_format_rule
-#                            .replace(_FIRST_GROUP_PATTERN,
-#                                             national_prefix_formatting_rule))
-#                else:
-#                    return national_number.replace(pattern_to_match, number_format_rule)
-#                
-#            
-#        
-#    
-#
-#    # If no pattern above is matched, we format the number as a whole.
-#    return national_number
-#
-#
-#
+def _format_national_number(number, region_code, number_format, 
+                            carrier_code=None):
+    """Note in some countries, the national number can be written in two
+    completely different ways depending on whether it forms part of the
+    NATIONAL format or INTERNATIONAL format. The number_format parameter here
+    is used to specify which format to use for those cases. If a carrier_code
+    is specified, this will be inserted into the formatted string to replace
+    $CC.
+
+    Args:
+        number: a string of characters representing a phone number.
+        region_code: the ISO 3166-1 two-letter country code.
+        number_format: the format the phone number should be formatted into.
+        carrier_code: carrier code string.
+    Returns:
+        the formatted phone number string.
+    """
+    metadata = get_metadata_for_region(region_code)
+    intl_number_formats = metadata.intl_number_format
+    # When the intl_number_formats exists, we use that to format national
+    # number for the INTERNATIONAL format instead of using the
+    # number_desc.number_formats.
+    if not intl_number_formats or number_format == FORMAT_NATIONAL:
+        available_formats = metadata.number_format
+    else:
+        available_formats = metadata.intl_number_format
+    return _format_according_to_formats(number, available_formats, 
+            number_format, carrier_code)
+
+
+def _format_according_to_formats(national_number, available_formats, 
+                                 number_format, carrier_code=None):
+    """Note that carrier_code is optional - if None or an empty string, no
+    carrier code replacement will take place. Carrier code replacement occurs
+    before national prefix replacement.
+    
+        national_number: a string of characters representing a phone number.
+        available_formats: the available formats the phone number could be 
+            formatted into.
+        number_format: the format the phone number should be formatted into.
+        carrier_code: carrier code string (default: None).
+    Returns:
+        the formatted phone number string.
+    """
+
+    # FIXME: This is prob where it's fucked up. Might be a next step to 
+    # get Java tests running so that expected intermediate outputs can
+    # be logged.
+
+    for num_format in available_formats:
+        size = len(num_format.leading_digits_pattern)
+        if (not size or 
+            # We always use the last leading_digits_pattern, as it is the most
+            # detailed.
+            national_number.find(num_format.leading_digits_pattern[-1]) == 0):
+            pattern_to_match = re.compile(num_format.pattern)
+            number_format_rule = num_format.format
+            if _matches_entirely(pattern_to_match, national_number):
+                if carrier_code:
+                    domestic_carrier_code_formatting_rule = \
+                            num_format.domestic_carrier_code_formatting_rule
+                    if domestic_carrier_code_formatting_rule:
+                        # Replace the $CC in the formatting rule with the
+                        # desired carrier code.
+                        carrier_code_formatting_rule = _CC_PATTERN.sub(
+                                carrier_code, 
+                                domestic_carrier_code_formatting_rule, 1)
+                        # Now replace the $FG in the formatting rule with the
+                        # first group and the carrier code combined in the
+                        # appropriate way.
+                        number_format_rule = _FIRST_GROUP_PATTERN.sub(
+                                carrier_code_formatting_rule,
+                                number_format_rule, 1)
+                national_prefix_formatting_rule = \
+                        num_format.national_prefix_formatting_rule
+                if (number_format == FORMAT_NATIONAL and 
+                    national_prefix_formatting_rule):
+                    return _FIRST_GROUP_PATTERN.sub(
+                            national_prefix_formatting_rule, 
+                            pattern_to_match.sub(
+                                    number_format_rule, national_number))
+                else:
+                    return pattern_to_match.sub(
+                            number_format_rule, national_number)
+    # If no pattern above is matched, we format the number as a whole.
+    return national_number
+ 
+ 
 #/**
 ## Gets a valid number for the specified country.
 # *
@@ -1112,7 +1089,7 @@ def _format_number_by_format(country_code, number_format,
 #    desc = _get_number_desc_by_type(
 #            get_metadata_for_region(region_code), type)
 #    try:
-#        if desc.has_example_number():
+#        if desc.HasField("example_number"):
 #            return parse(desc.get_example_number_or_default(), region_code)
 #        
 #    } catch (e):
@@ -1121,27 +1098,22 @@ def _format_number_by_format(country_code, number_format,
 #
 #
 #
-#/**
-## Gets the formatted extension of a phone number, if the phone number had an
-## extension specified. If not, it returns an empty string.
-# *
-## number the PhoneNumber that might have
-##           an extension.
-## region_code the ISO 3166-1 two-letter country code.
-## @return:string} the formatted extension if any.
-## @private
-# */
-#def _maybe_get_formatted_extension
-#        function(number, region_code):
-#
-#    if not number.has_extension():
-#        return ''
-#    else:
-#        return _format_extension(number.get_extension_or_default(), region_code)
-#    
-#
-#
-#
+def _maybe_get_formatted_extension(number, region_code):
+    """Gets the formatted extension of a phone number, if the phone number had
+    an extension specified. If not, it returns an empty string.
+   
+    Args:
+        number: the PhoneNumber that might have an extension.
+        region_code: the ISO 3166-1 two-letter country code.
+    Returns:
+        the formatted extension string if any.
+    """
+    if not number.HasField("extension"):
+        return ''
+    else:
+        return _format_extension(number.extension, region_code)
+
+
 #/**
 ## Formats the extension part of the phone number by prefixing it with the
 ## appropriate extension prefix. This will be the default extension prefix,
@@ -1157,7 +1129,7 @@ def _format_number_by_format(country_code, number_format,
 #
 #    /** @type:i18n.phonenumbers.Phone_metadata} */
 #    metadata = get_metadata_for_region(region_code)
-#    if metadata.has_preferred_extn_prefix():
+#    if metadata.HasField("preferred_extn_prefix"):
 #        return metadata.get_preferred_extn_prefix() + extension_digits
 #    else:
 #        return _DEFAULT_EXTN_PREFIX +
@@ -1222,65 +1194,46 @@ def _format_number_by_format(country_code, number_format,
 #
 #
 #
-#/**
-## national_number
-## metadata
-## @return:i18n.phonenumbers.PhoneNumber_type
-## @private
-# */
-#def _get_number_type_helper
-#        function(national_number, metadata):
-#
-#    /** @type:i18n.phonenumbers.PhoneNumber_desc} */
-#    general_number_desc = metadata.get_general_desc()
-#    if (not general_number_desc.has_national_number_pattern() ||
-#            not _is_number_matching_desc(national_number, general_number_desc)):
-#        return i18n.phonenumbers.PhoneNumber_type.UNKNOWN
-#    
-#
-#    if _is_number_matching_desc(national_number, metadata.get_premium_rate()):
-#        return i18n.phonenumbers.PhoneNumber_type.PREMIUM_RATE
-#    
-#    if _is_number_matching_desc(national_number, metadata.get_toll_free()):
-#        return i18n.phonenumbers.PhoneNumber_type.TOLL_FREE
-#    
-#    if _is_number_matching_desc(national_number, metadata.get_shared_cost()):
-#        return i18n.phonenumbers.PhoneNumber_type.SHARED_COST
-#    
-#    if _is_number_matching_desc(national_number, metadata.get_voip()):
-#        return i18n.phonenumbers.PhoneNumber_type.VOIP
-#    
-#    if (_is_number_matching_desc(national_number,
-#                                                                 metadata.get_personal_number())):
-#        return i18n.phonenumbers.PhoneNumber_type.PERSONAL_NUMBER
-#    
-#    if (_is_number_matching_desc(national_number,
-#                                                                 metadata.get_pager())):
-#        return i18n.phonenumbers.PhoneNumber_type.PAGER
-#    
-#
-#    /** @type:boolean} */
-#    is_fixed_line = _is_number_matching_desc(national_number, metadata
-#            .get_fixed_line())
-#    if is_fixed_line:
-#        if metadata.get_same_mobile_and_fixed_line_pattern():
-#            return i18n.phonenumbers.PhoneNumber_type.FIXED_LINE_OR_MOBILE
-#        } else if (_is_number_matching_desc(national_number,
-#                                                                                    metadata.get_mobile())):
-#            return i18n.phonenumbers.PhoneNumber_type.FIXED_LINE_OR_MOBILE
-#        
-#        return i18n.phonenumbers.PhoneNumber_type.FIXED_LINE
-#    
-#    # Otherwise, test to see if the number is mobile. Only do this if certain
-#    # that the patterns for mobile and fixed line aren't the same.
-#    if (not metadata.get_same_mobile_and_fixed_line_pattern() &&
-#            _is_number_matching_desc(national_number, metadata.get_mobile())):
-#        return i18n.phonenumbers.PhoneNumber_type.MOBILE
-#    
-#    return i18n.phonenumbers.PhoneNumber_type.UNKNOWN
-#
-#
-#
+def _get_number_type_helper(national_number, metadata):
+   general_number_desc = metadata.general_desc
+   if (not general_number_desc.HasField("national_number_pattern") or
+       not _is_number_matching_desc(national_number, general_number_desc)):
+       return TYPE_UNKNOWN
+
+   if _is_number_matching_desc(national_number, metadata.premium_rate):
+       return TYPE_PREMIUM_RATE
+   
+   if _is_number_matching_desc(national_number, metadata.toll_free):
+       return TYPE_TOLL_FREE
+   
+   if _is_number_matching_desc(national_number, metadata.shared_cost):
+       return TYPE_SHARED_COST
+   
+   if _is_number_matching_desc(national_number, metadata.voip):
+       return TYPE_VOIP
+   
+   if (_is_number_matching_desc(national_number, metadata.personal_number)):
+       return TYPE_PERSONAL_NUMBER
+   
+   if (_is_number_matching_desc(national_number, metadata.pager)):
+       return TYPE_PAGER
+
+   is_fixed_line = _is_number_matching_desc(national_number, metadata.fixed_line)
+   if is_fixed_line:
+       if metadata.same_mobile_and_fixed_line_pattern:
+           return TYPE_FIXED_LINE_OR_MOBILE
+       elif _is_number_matching_desc(national_number, metadata.mobile):
+           return TYPE_FIXED_LINE_OR_MOBILE
+       return TYPE_FIXED_LINE
+   
+   # Otherwise, test to see if the number is mobile. Only do this if certain
+   # that the patterns for mobile and fixed line aren't the same.
+   if (not metadata.same_mobile_and_fixed_line_pattern and
+       _is_number_matching_desc(national_number, metadata.mobile)):
+       return TYPE_MOBILE
+   
+   return TYPE_UNKNOWN
+
 
 def get_metadata_for_region(region_code):
     if not region_code:
@@ -1288,32 +1241,15 @@ def get_metadata_for_region(region_code):
     region_code = region_code.upper()
     if not region_code in _country_to_metadata_map:
         _load_metadata_for_region_from_file(region_code)
-#        metadata_serialized = \
-#            metadata_gen.country_to_metadata.get(region_code)
-#        if not metadata_serialized:
-#            return
-#        print metadata_serialized
-#        metadata = phonemetadata_pb2.PhoneMetadata(metadata_serialized)
-#        _country_to_metadata_map[region_code] = metadata
     return _country_to_metadata_map[region_code]
 
 
-#/**
-## national_number
-## number_desc
-## @return:boolean
-## @private
-# */
-#def _is_number_matching_desc
-#        function(national_number, number_desc):
-#
-#    return _matches_entirely(
-#            number_desc.get_possible_number_pattern(), national_number) &&
-#            _matches_entirely(
-#                    number_desc.get_national_number_pattern(), national_number)
-#
-#
-#
+def _is_number_matching_desc(national_number, number_desc):
+   return (_matches_entirely(
+                number_desc.possible_number_pattern, national_number) and
+           _matches_entirely(
+                number_desc.national_number_pattern, national_number))
+
 #/**
 ## Tests whether a phone number matches a valid pattern. Note this doesn't
 ## verify the number is actually in use, which is impossible to tell by just
@@ -1351,7 +1287,7 @@ def get_metadata_for_region(region_code):
 #def is_valid_number_for_region
 #        function(number, region_code):
 #
-#    if (number.get_country_code_or_default() !=
+#    if (number.country_code !=
 #            get_country_code_for_region(region_code)):
 #        return false
 #    
@@ -1367,7 +1303,7 @@ def get_metadata_for_region(region_code):
 #    # any number passed in as a valid number if its national significant number
 #    # is between the minimum and maximum lengths defined by ITU for a national
 #    # significant number.
-#    if not general_num_desc.has_national_number_pattern():
+#    if not general_num_desc.HasField("national_number_pattern"):
 #        /** @type:number} */
 #        number_length = national_significant_number.length
 #        return number_length >
@@ -1394,8 +1330,8 @@ def get_region_code_for_number(number):
     """
     if not number: 
         return
-    country_code = number.get_country_code_or_default()
-    regions = metadata.country_code_to_region_code_map.get(country_code)
+    country_code = number.country_code
+    regions = metadata_gen.country_code_to_region_code_map.get(country_code)
     if not regions: 
         return
     if len(regions) == 1:
@@ -1405,38 +1341,37 @@ def get_region_code_for_number(number):
     
 
 def _get_region_code_for_number_from_region_list(number, region_codes):
-    national_number = str(number.get_national_number())
+    national_number = str(number.national_number)
     for region_code in region_codes:
         # If leading_digits is present, use  Otherwise, do full validation.
         metadata = get_metadata_for_region(region_code)
-        if metadata.has_leading_digits():
-            if national_number.search(metadata.get_leading_digits()) == 0:
+        if metadata.HasField("leading_digits"):
+            if national_number.find(metadata.leading_digits) == 0:
                 return region_code
-            
         elif _get_number_type_helper(national_number, metadata) != TYPE_UNKNOWN:
             return region_code
     return None
 
 
-#/**
-## Returns the region code that matches the specific country code. In the case
-## of no region code being found, ZZ will be returned. In the case of multiple
-## regions, the one designated in the metadata as the "main" country for this
-## calling code will be returned.
-# *
-## country_code the country calling code.
-## @return:string
-# */
-#def get_region_code_for_country_code
-#        function(country_code):
-#
-#    /** @type:Array.<string>} */
-#    region_codes =
-#            i18n.phonenumbers.metadata.country_code_to_region_code_map[country_code]
-#    return region_codes == None ? 'ZZ' : region_codes[0]
-#
-#
-#
+def get_region_code_for_country_code(country_code):
+    """Returns the region code that matches the specific country code. In the
+    case of no region code being found, ZZ will be returned.
+    
+    In the case of multiple regions, the one designated in the metadata as the
+    "main" country for this calling code will be returned.
+    
+    Args:
+        country_code: the country calling code.
+    Returns:
+        region code string or 'ZZ' if none found.
+    """
+    region_codes = \
+            metadata_gen.country_code_to_region_code_map.get(country_code)
+    if not region_codes:
+        return 'ZZ'
+    return region_codes[0]
+
+
 #/**
 ## Returns the country calling code for a specific region. For example, this
 ## would be 1 for the United States, and 64 for New Zealand.
@@ -1457,7 +1392,7 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #    if metadata == None:
 #        return 0
 #    
-#    return metadata.get_country_code_or_default()
+#    return metadata.country_code
 #
 #
 #
@@ -1582,7 +1517,7 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #        function(number):
 #
 #    /** @type:number} */
-#    country_code = number.get_country_code_or_default()
+#    country_code = number.country_code
 #    # Note: For Russian Fed and NANPA numbers, we just use the rules from the
 #    # default region (US or Russia) since the get_region_code_for_number will not
 #    # work if the number is possible but not valid. This would need to be
@@ -1600,7 +1535,7 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #    /** @type:i18n.phonenumbers.PhoneNumber_desc} */
 #    general_num_desc = get_metadata_for_region(region_code).get_general_desc()
 #    # Handling case of numbers with no metadata.
-#    if not general_num_desc.has_national_number_pattern():
+#    if not general_num_desc.HasField("national_number_pattern"):
 #        /** @type:number} */
 #        number_length = national_number.length
 #        if number_length < _MIN_LENGTH_FOR_NSN:
@@ -1817,7 +1752,7 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #        if (not _matches_entirely(
 #                valid_number_pattern, full_number.to_string())):
 #            /** @type:number} */
-#            default_country_code = default_region_metadata.get_country_code_or_default()
+#            default_country_code = default_region_metadata.country_code
 #            /** @type:string} */
 #            default_country_code_string = '' + default_country_code
 #            /** @type:string} */
@@ -2209,7 +2144,7 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #        _normalize_sB(national_number)
 #        normalized_national_number.append(national_number.to_string())
 #        if default_country != None:
-#            country_code = country_metadata.get_country_code_or_default()
+#            country_code = country_metadata.country_code
 #            phone_number.set_country_code(country_code)
 #        } else if keep_raw_input:
 #            phone_number.clear_country_code_source()
@@ -2303,22 +2238,22 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #    first_number.clear_country_code_source()
 #    second_number.clear_raw_input()
 #    second_number.clear_country_code_source()
-#    if first_number.has_extension() && first_number.get_extension().length == 0:
+#    if first_number.HasField("extension") && first_number.get_extension().length == 0:
 #        first_number.clear_extension()
 #    
-#    if second_number.has_extension() && second_number.get_extension().length == 0:
+#    if second_number.HasField("extension") && second_number.get_extension().length == 0:
 #        second_number.clear_extension()
 #    
 #
 #    # Early exit if both had extensions and these are different.
-#    if (first_number.has_extension() && second_number.has_extension() &&
+#    if (first_number.HasField("extension") && second_number.HasField("extension") &&
 #            first_number.get_extension() != second_number.get_extension()):
 #        return Match_type.NO_MATCH
 #    
 #    /** @type:number} */
-#    first_number_country_code = first_number.get_country_code_or_default()
+#    first_number_country_code = first_number.country_code
 #    /** @type:number} */
-#    second_number_country_code = second_number.get_country_code_or_default()
+#    second_number_country_code = second_number.country_code
 #    # Both had country code specified.
 #    if first_number_country_code != 0 && second_number_country_code != 0:
 #        if first_number.exactly_same_as(second_number):
@@ -2375,25 +2310,19 @@ def _get_region_code_for_number_from_region_list(number, region_codes):
 #
 #
 #
-#/**
-## Check whether the entire input sequence can be matched against the regular
-## expression.
-# *
-## regex the regular expression to match against.
-## str the string to test.
-## @return:boolean} true if str can be matched entirely against regex.
-## @private
-# */
-#_matches_entirely = function(regex, str):
-#    /** @type:Array.<string>} */
-#    matched_groups = str.match(regex)
-#    if matched_groups && matched_groups[0].length == str.length:
-#        return true
-#    
-#    return false
-#
-#
-#
+def _matches_entirely(pattern, string):
+    """Check whether the entire input sequence can be matched against the
+    regular expression.
+    
+    Args:
+        pattern: the regular expression pattern string to match against.
+        string: the string to test.
+    Returns:
+        True if string can be matched entirely against pattern.
+    """
+    match = re.match(pattern, string)
+    return match and len(match.group(0)) == len(string)
+
 #/**
 ## other
 ## @return:boolean
