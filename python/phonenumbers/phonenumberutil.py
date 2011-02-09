@@ -22,9 +22,10 @@ import os.path
 import re
 import cStringIO as StringIO
 
-from phonenumbers import metadata_gen
+from phonenumbers import countrycodetoregioncodemap
 from phonenumbers import phonemetadata_pb2
 from phonenumbers import phonenumber_pb2
+
 
 COUNTRY_CODE_TO_REGION_CODE_MAP_NAME = "country_code_to_region_code_map"
 
@@ -71,16 +72,16 @@ _MIN_LENGTH_FOR_NSN = 3
 # The maximum length of the national significant number.
 _MAX_LENGTH_FOR_NSN = 15
 
-META_DATA_FILE_PREFIX = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), "data",
-    "phonenumbermetadataproto")
+META_DATA_FILE_PREFIX = "phonenumbermetadataproto"
 
 _file_prefix = META_DATA_FILE_PREFIX
 
 
 def set_file_prefix(file_prefix):
+    # TODO: purge caches
     global _file_prefix
     _file_prefix = file_prefix
+
 
 _NANPA_COUNTRY_CODE = 1
 
@@ -303,7 +304,7 @@ _VALID_PHONE_NUMBER_PATTERN = re.compile(
     _VALID_PHONE_NUMBER + u"(?:" + _KNOWN_EXTN_PATTERNS + u")?",
     re.UNICODE | re.IGNORECASE)
 
-_NON_DIGITS_PATTERN = re.compile(u"(\\D+)")
+_NON_DIGITS_PATTERN = re.compile(u"\\D+") # Changed from "(\\D+)" in Java
 _FIRST_GROUP_PATTERN = re.compile(u"(\\$1)")
 _NP_PATTERN = re.compile(u"\\$NP")
 _FG_PATTERN = re.compile(u"\\$FG")
@@ -388,10 +389,10 @@ VALIDATION_RESULT_TOO_LONG = 3
 
 # Init stuff from Java version getInstance()
 supported_countries = []
-for region_codes in metadata_gen.country_code_to_region_code_map.values():
+for region_codes in countrycodetoregioncodemap.country_code_to_region_code_map.values():
     supported_countries.extend(region_codes)
 nanpa_countries = \
-    metadata_gen.country_code_to_region_code_map.get(_NANPA_COUNTRY_CODE)
+    countrycodetoregioncodemap.country_code_to_region_code_map.get(_NANPA_COUNTRY_CODE)
 
 
 def _load_metadata_for_region_from_file(region_code):
@@ -622,7 +623,7 @@ def get_length_of_national_destination_code(number):
     national_significant_number = format(copied_proto, FORMAT_INTERNATIONAL)
 
     number_groups = _NON_DIGITS_PATTERN.split(national_significant_number)
-    
+
     # The pattern will start with '+COUNTRY_CODE ' so the first group will always
     # be the empty string (before the + symbol) and the second group will be the
     # country code. The third group will be area code if it's not the last group.
@@ -638,9 +639,9 @@ def get_length_of_national_destination_code(number):
         #
         # TODO: Investigate the possibility of better modeling the metadata to make
         # it easier to obtain the NDC.
-        return len(number_groups[2]) + 1
+        return len(number_groups[3]) + 1
     
-    return len(number_groups[1])
+    return len(number_groups[2])
 
 
 def _normalize_helper(number, normalization_replacements, remove_non_matches):
@@ -700,7 +701,6 @@ def format(number, number_format):
     Returns:
         the formatted phone number.
     """
-    formatted_number = ""
     country_code = number.country_code
     national_significant_number = get_national_significant_number(number)
     if number_format == FORMAT_E164:
@@ -717,12 +717,9 @@ def format(number, number_format):
     if not _is_valid_region_code(region_code):
         return national_significant_number
     
-    # FIXME: We're good up to here
-    formatted_number += _format_national_number(
+    formatted_national_number = _format_national_number(
             national_significant_number, region_code, number_format)
-    print "formatted_number", formatted_number
-    # FIXME: here we are!
-    formatted_number += _maybe_get_formatted_extension(number, region_code)
+    formatted_extension = _maybe_get_formatted_extension(number, region_code)
     return _format_number_by_format(country_code, number_format, 
             formatted_national_number, formatted_extension)
 
@@ -1332,10 +1329,11 @@ def get_region_code_for_number(number):
         the country/region where the phone number is from, or None if no 
         country matches this calling code.
     """
+    import pdb; pdb.set_trace()
     if not number: 
         return
     country_code = number.country_code
-    regions = metadata_gen.country_code_to_region_code_map.get(country_code)
+    regions = countrycodetoregioncodemap.country_code_to_region_code_map.get(country_code)
     if not regions: 
         return
     if len(regions) == 1:
@@ -1370,7 +1368,7 @@ def get_region_code_for_country_code(country_code):
         region code string or 'ZZ' if none found.
     """
     region_codes = \
-            metadata_gen.country_code_to_region_code_map.get(country_code)
+            countrycodetoregioncodemap.country_code_to_region_code_map.get(country_code)
     if not region_codes:
         return 'ZZ'
     return region_codes[0]
