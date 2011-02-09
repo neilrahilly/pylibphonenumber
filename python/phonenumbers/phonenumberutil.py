@@ -700,6 +700,7 @@ def format(number, number_format):
     Returns:
         the formatted phone number.
     """
+    formatted_number = ""
     country_code = number.country_code
     national_significant_number = get_national_significant_number(number)
     if number_format == FORMAT_E164:
@@ -717,9 +718,11 @@ def format(number, number_format):
         return national_significant_number
     
     # FIXME: We're good up to here
-    formatted_extension = _maybe_get_formatted_extension(number, region_code)
-    formatted_national_number = _format_national_number(
+    formatted_number += _format_national_number(
             national_significant_number, region_code, number_format)
+    print "formatted_number", formatted_number
+    # FIXME: here we are!
+    formatted_number += _maybe_get_formatted_extension(number, region_code)
     return _format_number_by_format(country_code, number_format, 
             formatted_national_number, formatted_extension)
 
@@ -1011,11 +1014,6 @@ def _format_according_to_formats(national_number, available_formats,
     Returns:
         the formatted phone number string.
     """
-
-    # FIXME: This is prob where it's fucked up. Might be a next step to 
-    # get Java tests running so that expected intermediate outputs can
-    # be logged.
-
     for num_format in available_formats:
         size = len(num_format.leading_digits_pattern)
         if (not size or 
@@ -1025,32 +1023,37 @@ def _format_according_to_formats(national_number, available_formats,
             pattern_to_match = re.compile(num_format.pattern)
             number_format_rule = num_format.format
             if _matches_entirely(pattern_to_match, national_number):
-                if carrier_code:
+                if (carrier_code and
+                    num_format.domestic_carrier_code_formatting_rule):
                     domestic_carrier_code_formatting_rule = \
                             num_format.domestic_carrier_code_formatting_rule
-                    if domestic_carrier_code_formatting_rule:
-                        # Replace the $CC in the formatting rule with the
-                        # desired carrier code.
-                        carrier_code_formatting_rule = _CC_PATTERN.sub(
-                                carrier_code, 
-                                domestic_carrier_code_formatting_rule, 1)
-                        # Now replace the $FG in the formatting rule with the
-                        # first group and the carrier code combined in the
-                        # appropriate way.
-                        number_format_rule = _FIRST_GROUP_PATTERN.sub(
-                                carrier_code_formatting_rule,
-                                number_format_rule, 1)
+                    # Replace the $CC in the formatting rule with the
+                    # desired carrier code.
+                    carrier_code_formatting_rule = _CC_PATTERN.sub(
+                            carrier_code, 
+                            domestic_carrier_code_formatting_rule, 1)
+                    # Now replace the $FG in the formatting rule with the
+                    # first group and the carrier code combined in the
+                    # appropriate way.
+                    number_format_rule = _FIRST_GROUP_PATTERN.sub(
+                            carrier_code_formatting_rule,
+                            number_format_rule, 1)
+
                 national_prefix_formatting_rule = \
                         num_format.national_prefix_formatting_rule
                 if (number_format == FORMAT_NATIONAL and 
                     national_prefix_formatting_rule):
+                    number_format_rule = \
+                            _backslash_notation(number_format_rule)
                     return _FIRST_GROUP_PATTERN.sub(
                             national_prefix_formatting_rule, 
                             pattern_to_match.sub(
                                     number_format_rule, national_number))
                 else:
-                    return pattern_to_match.sub(
-                            number_format_rule, national_number)
+                    number_format_rule = \
+                            _backslash_notation(number_format_rule)
+                    return pattern_to_match.sub(number_format_rule, 
+                            national_number)
     # If no pattern above is matched, we format the number as a whole.
     return national_number
  
@@ -2374,6 +2377,15 @@ def _matches_entirely(pattern, string):
 #        _values = goog.clone_object(other._values)
 #    
 #    return this
+
+def _backslash_notation(number_format_rule):
+    """Converts regular expression backreferences to backslash notation.
+
+    Python expects backreferences formatted as \1 \2 \3 not $1 $2 $3. See
+    http://docs.python.org/library/re.html.
+    """
+    return number_format_rule.replace(u"$", u"\\")
+
 
 if __name__ == "__main__":
     print get_metadata_for_region("US")
