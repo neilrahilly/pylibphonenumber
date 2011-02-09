@@ -15,22 +15,22 @@
 
 """Unit tests for phonenumberutil."""
 
+import os.path
 import unittest
 
 from phonenumbers import phonenumber_pb2
 from phonenumbers import phonenumberutil
+from phonenumbers.test import countrycodetoregioncodemapfortesting
 
 
-TEST_META_DATA_FILE_PREFIX = phonenumberutil.META_DATA_FILE_PREFIX + "_test"
 
-
-phonenumberutil.set_file_prefix(TEST_META_DATA_FILE_PREFIX)
+phonenumberutil.init(
+    TEST_META_DATA_FILE_PREFIX, 
+    countrycodetoregioncodemapfortesting.country_code_to_region_code_map.copy())
 
 
 class PhoneNumberUtilTest(unittest.TestCase):
     def test_get_instance_load_US_metadata(self):
-        # In Java and JavaScript a singleton class is used. We use a module
-        # in Python, so import is like getInstance().
         metadata = phonenumberutil.get_metadata_for_region("US")
         self.assertEquals("US", metadata.id)
         self.assertEquals(1, metadata.country_code)

@@ -23,13 +23,13 @@ import os.path
 import pprint
 
 from phonenumbers import buildmetadatafromxml
+from phonenumbers import buildconstants
 from phonenumbers import phonemetadata_pb2
-from phonenumbers import phonenumberutil
-from phonenumbers.test import phonenumberutil_test
 
 
 USAGE = """Example command line invocation:
-./buildmetadataprotofromxml.py -tl -i PhoneNumberMetadata.xml -o data"""
+./buildmetadataprotofromxml.py -i PhoneNumberMetadata.xml -o .
+./buildmetadataprotofromxml.py -i PhoneNumberMetadataForTesting.xml -o test -v"""
 
 
 COPYRIGHT_NOTICE = """\
@@ -104,11 +104,11 @@ def main():
 def _generate_metadata_proto_files(metadata_collection, options):
     # Generate metadata proto files
     if options.for_testing:
-        file_prefix = os.path.join(options.output_dir, "data",
-                phonenumberutil_test.TEST_META_DATA_FILE_PREFIX)
+        file_prefix = os.path.join(options.output_dir,
+                buildconstants.TEST_META_DATA_FILE_PREFIX)
     else:
-        file_prefix = os.path.join(options.output_dir, "data",
-                phonenumberutil.META_DATA_FILE_PREFIX)
+        file_prefix = os.path.join(options.output_dir,
+                buildconstants.META_DATA_FILE_PREFIX)
     logging.debug("file_prefix: %s" % file_prefix)
 
     for metadata in metadata_collection.metadata:
@@ -129,15 +129,15 @@ def _write_country_calling_code_mapping_to_python_file(metadata_collection,
     country_code_to_region_code_map = \
             buildmetadatafromxml.build_country_code_to_region_code_map(
                     metadata_collection)
-    mapping_name = phonenumberutil.COUNTRY_CODE_TO_REGION_CODE_MAP_NAME
+    mapping_name = buildconstants.COUNTRY_CODE_TO_REGION_CODE_MAP_NAME
     module_name = mapping_name.replace("_", "")
     if options.for_testing:
-        mapping_name += "_test"
+        mapping_name += "fortesting"
     module_name += ".py"
     mapping_file_name = os.path.join(options.output_dir, module_name)
 
     logging.debug("%s = %s" % (mapping_name, country_code_to_region_code_map))
-    logging.debug("writing to %s" % mapping_file_name)
+    logging.debug("writing map to %s" % mapping_file_name)
     
     mapping_file = open(mapping_file_name, "w")
     mapping_file.write(COPYRIGHT_NOTICE) 
