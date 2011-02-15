@@ -18,8 +18,12 @@
 import os.path
 
 
-META_DATA_FILE_PREFIX = os.path.join("data", "phonenumbermetadataproto")
+_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-TEST_META_DATA_FILE_PREFIX = META_DATA_FILE_PREFIX + "_test"
+META_DATA_FILE_PREFIX = os.path.join(
+        _ROOT, "data", "phonenumbermetadataproto")
+
+TEST_META_DATA_FILE_PREFIX = os.path.join(
+        _ROOT, "test", "data", "phonenumbermetadataproto_test")
 
 COUNTRY_CODE_TO_REGION_CODE_MAP_NAME = "country_code_to_region_code_map"

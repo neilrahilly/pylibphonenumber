@@ -265,13 +265,3 @@ def _process_phone_number_desc_element(general_desc, country_element, number_typ
             if example_number:
                 number_desc.example_number = example_number[0].text
     return number_desc
-
-
-if __name__ == "__main__":
-    metadata_collection = \
-            build_phone_metadata_collection("PhoneNumberMetaData.xml", False)
-    for metadata in metadata_collection.metadata:
-        print metadata
-    country_code_to_region_code_map = \
-            build_country_code_to_region_code_map(metadata_collection)
-    print country_code_to_region_code_map

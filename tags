@@ -37,7 +37,7 @@ COUNTRY_CODE_TO_REGION_CODE_MAP_COMMENT	BuildMetadataPythonFromXml.java	/^  priv
 COUNTRY_CODE_TO_REGION_CODE_MAP_COMMENT	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/BuildMetadataJsonFromXml.java	/^  private static final String COUNTRY_CODE_TO_REGION_CODE_MAP_COMMENT =$/;"	f	class:BuildMetadataJsonFromXml	file:
 COUNTRY_CODE_TO_REGION_CODE_MAP_COMMENT	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/BuildMetadataPythonFromXml.java	/^  private static final String COUNTRY_CODE_TO_REGION_CODE_MAP_COMMENT =$/;"	f	class:BuildMetadataPythonFromXml	file:
 COUNTRY_CODE_TO_REGION_CODE_MAP_MODULE_NAME	BuildMetadataProtoAndPythonFromXml.java	/^	private static final COUNTRY_CODE_TO_REGION_CODE_MAP_MODULE_NAME = "countrycodetoregioncodemap"$/;"	f	class:BuildMetadataProtoAndPythonFromXml	file:
-COUNTRY_CODE_TO_REGION_CODE_MAP_NAME	python/phonenumbers/phonenumberutil.py	/^COUNTRY_CODE_TO_REGION_CODE_MAP_NAME = "country_code_to_region_code_map"$/;"	v
+COUNTRY_CODE_TO_REGION_CODE_MAP_NAME	python/phonenumbers/buildconstants.py	/^COUNTRY_CODE_TO_REGION_CODE_MAP_NAME = "country_code_to_region_code_map"$/;"	v
 COUNTRY_TO_METADATA_COMMENT	BuildMetadataPythonFromXml.java	/^  private static final String COUNTRY_TO_METADATA_COMMENT =$/;"	f	class:BuildMetadataPythonFromXml	file:
 COUNTRY_TO_METADATA_COMMENT	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/BuildMetadataJsonFromXml.java	/^  private static final String COUNTRY_TO_METADATA_COMMENT =$/;"	f	class:BuildMetadataJsonFromXml	file:
 COUNTRY_TO_METADATA_COMMENT	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/BuildMetadataPythonFromXml.java	/^  private static final String COUNTRY_TO_METADATA_COMMENT =$/;"	f	class:BuildMetadataPythonFromXml	file:
@@ -111,8 +111,7 @@ MATCH_TYPE_NO_MATCH	python/phonenumbers/phonenumberutil.py	/^MATCH_TYPE_NO_MATCH
 MATCH_TYPE_NSN_MATCH	python/phonenumbers/phonenumberutil.py	/^MATCH_TYPE_NSN_MATCH = 2$/;"	v
 MATCH_TYPE_SHORT_NSN_MATCH	python/phonenumbers/phonenumberutil.py	/^MATCH_TYPE_SHORT_NSN_MATCH = 1$/;"	v
 MAX_LENGTH_FOR_NSN	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private static final int MAX_LENGTH_FOR_NSN = 15;$/;"	f	class:PhoneNumberUtil	file:
-META_DATA_FILE_PREFIX	python/phonenumbers/pbexperiments.py	/^META_DATA_FILE_PREFIX = "\/Users\/neil\/workspace\/libphonenumber-py\/python\/phonenumbers\/data\/PhoneNumberMetadataProto"$/;"	v
-META_DATA_FILE_PREFIX	python/phonenumbers/phonenumberutil.py	/^META_DATA_FILE_PREFIX = os.path.join($/;"	v
+META_DATA_FILE_PREFIX	python/phonenumbers/buildconstants.py	/^META_DATA_FILE_PREFIX = os.path.join("data", "phonenumbermetadataproto")$/;"	v
 META_DATA_FILE_PREFIX	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  static final String META_DATA_FILE_PREFIX =$/;"	f	class:PhoneNumberUtil
 MIN_LEADING_DIGITS_LENGTH	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private static final int MIN_LEADING_DIGITS_LENGTH = 3;$/;"	f	class:AsYouTypeFormatter	file:
 MIN_LENGTH_FOR_NSN	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private static final int MIN_LENGTH_FOR_NSN = 3;$/;"	f	class:PhoneNumberUtil	file:
@@ -156,6 +155,7 @@ PhoneNumberDesc	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/P
 PhoneNumberDesc	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^  public static final class PhoneNumberDesc implements Externalizable {$/;"	c	class:Phonemetadata
 PhoneNumberFormat	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public enum PhoneNumberFormat {$/;"	g	class:PhoneNumberUtil
 PhoneNumberType	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public enum PhoneNumberType {$/;"	g	class:PhoneNumberUtil
+PhoneNumberUtil	python/phonenumbers/phonenumberutil.py	/^class PhoneNumberUtil(object):$/;"	c
 PhoneNumberUtil	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private PhoneNumberUtil() {$/;"	m	class:PhoneNumberUtil	file:
 PhoneNumberUtil	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^public class PhoneNumberUtil {$/;"	c
 PhoneNumberUtil.java	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	1;"	F
@@ -188,7 +188,7 @@ SHORT_NSN_MATCH	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/P
 STANDALONE_DIGIT_PATTERN	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private static final Pattern STANDALONE_DIGIT_PATTERN = Pattern.compile("\\\\d(?=[^,}][^,}])");$/;"	f	class:AsYouTypeFormatter	file:
 StringIO	python/phonenumbers/phonenumberutil.py	/^import cStringIO as StringIO$/;"	i
 TEST_COUNTRY_CODE_TO_REGION_CODE_MAP_CLASS_NAME	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/PhoneNumberUtilTest.java	/^  static final String TEST_COUNTRY_CODE_TO_REGION_CODE_MAP_CLASS_NAME =$/;"	f	class:PhoneNumberUtilTest
-TEST_META_DATA_FILE_PREFIX	python/phonenumbers/test/phonenumberutil_test.py	/^TEST_META_DATA_FILE_PREFIX = phonenumberutil.META_DATA_FILE_PREFIX + "_test"$/;"	v
+TEST_META_DATA_FILE_PREFIX	python/phonenumbers/buildconstants.py	/^TEST_META_DATA_FILE_PREFIX = META_DATA_FILE_PREFIX + "_test"$/;"	v
 TEST_META_DATA_FILE_PREFIX	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/PhoneNumberUtilTest.java	/^  static final String TEST_META_DATA_FILE_PREFIX =$/;"	f	class:PhoneNumberUtilTest
 TOLL_FREE	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^    TOLL_FREE,$/;"	e	enum:PhoneNumberUtil.PhoneNumberType	file:
 TOO_LONG	python/phonenumbers/phonenumberutil.py	/^    TOO_LONG = u"The string supplied is too long to be a phone number"$/;"	v	class:NumberParseError
@@ -240,7 +240,7 @@ _LEADING_ZERO_COUNTRIES	python/phonenumbers/phonenumberutil.py	/^_LEADING_ZERO_C
 _MAX_LENGTH_FOR_NSN	python/phonenumbers/phonenumberutil.py	/^_MAX_LENGTH_FOR_NSN = 15$/;"	v
 _MIN_LENGTH_FOR_NSN	python/phonenumbers/phonenumberutil.py	/^_MIN_LENGTH_FOR_NSN = 3$/;"	v
 _NANPA_COUNTRY_CODE	python/phonenumbers/phonenumberutil.py	/^_NANPA_COUNTRY_CODE = 1$/;"	v
-_NON_DIGITS_PATTERN	python/phonenumbers/phonenumberutil.py	/^_NON_DIGITS_PATTERN = re.compile(u"(\\\\D+)")$/;"	v
+_NON_DIGITS_PATTERN	python/phonenumbers/phonenumberutil.py	/^_NON_DIGITS_PATTERN = re.compile(u"\\\\D+") # Changed from "(\\\\D+)" in Java$/;"	v
 _NP_PATTERN	python/phonenumbers/phonenumberutil.py	/^_NP_PATTERN = re.compile(u"\\\\$NP")$/;"	v
 _NUMBERFORMAT	python/phonenumbers/phonemetadata_pb2.py	/^_NUMBERFORMAT = descriptor.Descriptor($/;"	v
 _PHONEMETADATA	python/phonenumbers/phonemetadata_pb2.py	/^_PHONEMETADATA = descriptor.Descriptor($/;"	v
@@ -272,30 +272,30 @@ __metaclass__	python/phonenumbers/phonemetadata_pb2.py	/^  __metaclass__ = refle
 __metaclass__	python/phonenumbers/phonemetadata_pb2.py	/^  __metaclass__ = reflection.GeneratedProtocolMessageType$/;"	v	class:PhoneNumberDesc
 __metaclass__	python/phonenumbers/phonenumber_pb2.py	/^  __metaclass__ = reflection.GeneratedProtocolMessageType$/;"	v	class:PhoneNumber
 __str__	python/phonenumbers/phonenumberutil.py	/^    def __str__(self):$/;"	m	class:NumberParseError	file:
-_backslash_notation	python/phonenumbers/phonenumberutil.py	/^def _backslash_notation(number_format_rule):$/;"	f
-_country_to_metadata_map	python/phonenumbers/phonenumberutil.py	/^_country_to_metadata_map = {}$/;"	v
-_file_prefix	python/phonenumbers/phonenumberutil.py	/^_file_prefix = META_DATA_FILE_PREFIX$/;"	v
-_format_according_to_formats	python/phonenumbers/phonenumberutil.py	/^def _format_according_to_formats(national_number, available_formats, $/;"	f
-_format_national_number	python/phonenumbers/phonenumberutil.py	/^def _format_national_number(number, region_code, number_format, $/;"	f
-_format_number_by_format	python/phonenumbers/phonenumberutil.py	/^def _format_number_by_format(country_code, number_format,$/;"	f
+_backslash_notation	python/phonenumbers/phonenumberutil.py	/^    def _backslash_notation(self, number_format_rule):$/;"	m	class:PhoneNumberUtil
+_format_according_to_formats	python/phonenumbers/phonenumberutil.py	/^    def _format_according_to_formats(self, national_number, available_formats, $/;"	m	class:PhoneNumberUtil
+_format_national_number	python/phonenumbers/phonenumberutil.py	/^    def _format_national_number(self, number, region_code, number_format, $/;"	m	class:PhoneNumberUtil
+_format_number_by_format	python/phonenumbers/phonenumberutil.py	/^    def _format_number_by_format(self, country_code, number_format,$/;"	m	class:PhoneNumberUtil
+_generate_metadata_proto_files	python/phonenumbers/buildmetadataprotofromxml.py	/^def _generate_metadata_proto_files(metadata_collection, options):$/;"	f
 _get_domestic_carrier_code_formatting_rule_from_element	python/phonenumbers/buildmetadatafromxml.py	/^def _get_domestic_carrier_code_formatting_rule_from_element(element,$/;"	f
 _get_national_prefix_formatting_rule_from_element	python/phonenumbers/buildmetadatafromxml.py	/^def _get_national_prefix_formatting_rule_from_element(element,$/;"	f
-_get_number_type_helper	python/phonenumbers/phonenumberutil.py	/^def _get_number_type_helper(national_number, metadata):$/;"	f
-_get_region_code_for_number_from_region_list	python/phonenumbers/phonenumberutil.py	/^def _get_region_code_for_number_from_region_list(number, region_codes):$/;"	f
-_is_number_matching_desc	python/phonenumbers/phonenumberutil.py	/^def _is_number_matching_desc(national_number, number_desc):$/;"	f
-_is_valid_region_code	python/phonenumbers/phonenumberutil.py	/^def _is_valid_region_code(region_code):$/;"	f
+_get_number_type_helper	python/phonenumbers/phonenumberutil.py	/^    def _get_number_type_helper(self, national_number, metadata):$/;"	m	class:PhoneNumberUtil
+_get_region_code_for_number_from_region_list	python/phonenumbers/phonenumberutil.py	/^    def _get_region_code_for_number_from_region_list(self, number, region_codes):$/;"	m	class:PhoneNumberUtil
+_init	python/phonenumbers/phonenumberutil.py	/^    def _init(self, file_prefix):$/;"	m	class:PhoneNumberUtil
+_instance	python/phonenumbers/phonenumberutil.py	/^    _instance = None$/;"	v	class:PhoneNumberUtil
+_is_number_matching_desc	python/phonenumbers/phonenumberutil.py	/^    def _is_number_matching_desc(self, national_number, number_desc):$/;"	m	class:PhoneNumberUtil
+_is_valid_region_code	python/phonenumbers/phonenumberutil.py	/^    def _is_valid_region_code(self, region_code):$/;"	m	class:PhoneNumberUtil
 _lite_build	python/phonenumbers/buildmetadatafromxml.py	/^_lite_build = False$/;"	v
 _load_country_metadata	python/phonenumbers/buildmetadatafromxml.py	/^def _load_country_metadata(region_code, element, metadata):$/;"	f
-_load_metadata_for_region_from_file	python/phonenumbers/pbexperiments.py	/^def _load_metadata_for_region_from_file(file_prefix, region_code):$/;"	f
-_load_metadata_for_region_from_file	python/phonenumbers/phonenumberutil.py	/^def _load_metadata_for_region_from_file(region_code):$/;"	f
-_matches_entirely	python/phonenumbers/phonenumberutil.py	/^def _matches_entirely(pattern, string):$/;"	f
-_maybe_get_formatted_extension	python/phonenumbers/phonenumberutil.py	/^def _maybe_get_formatted_extension(number, region_code):$/;"	f
-_normalize_helper	python/phonenumbers/phonenumberutil.py	/^def _normalize_helper(number, normalization_replacements, remove_non_matches):$/;"	f
+_load_metadata_for_region_from_file	python/phonenumbers/phonenumberutil.py	/^    def _load_metadata_for_region_from_file(self, region_code):$/;"	m	class:PhoneNumberUtil
+_matches_entirely	python/phonenumbers/phonenumberutil.py	/^    def _matches_entirely(self, pattern, string):$/;"	m	class:PhoneNumberUtil
+_maybe_get_formatted_extension	python/phonenumbers/phonenumberutil.py	/^    def _maybe_get_formatted_extension(self, number, region_code):$/;"	m	class:PhoneNumberUtil
+_normalize_helper	python/phonenumbers/phonenumberutil.py	/^    def _normalize_helper(self, number, normalization_replacements, remove_non_matches):$/;"	m	class:PhoneNumberUtil
 _process_phone_number_desc_element	python/phonenumbers/buildmetadatafromxml.py	/^def _process_phone_number_desc_element(general_desc, country_element, number_type):$/;"	f
 _regex_cache	python/phonenumbers/phonenumberutil.py	/^_regex_cache = _RegexCache(100)$/;"	v
 _set_leading_digits_patterns	python/phonenumbers/buildmetadatafromxml.py	/^def _set_leading_digits_patterns(number_format_element, format):$/;"	f
 _validate_re	python/phonenumbers/buildmetadatafromxml.py	/^def _validate_re(regex, remove_whitespace=False):$/;"	f
-_write_country_calling_code_mapping_to_python_file	python/phonenumbers/buildmetadataprotofromxml.py	/^def _write_country_calling_code_mapping_to_python_file($/;"	f
+_write_country_calling_code_mapping_to_python_file	python/phonenumbers/buildmetadataprotofromxml.py	/^def _write_country_calling_code_mapping_to_python_file(metadata_collection,$/;"	f
 ableToFormat	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private boolean ableToFormat = true;$/;"	f	class:AsYouTypeFormatter	file:
 accruedInput	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private StringBuffer accruedInput = new StringBuffer();$/;"	f	class:AsYouTypeFormatter	file:
 accruedInputWithoutFormatting	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private StringBuffer accruedInputWithoutFormatting = new StringBuffer();$/;"	f	class:AsYouTypeFormatter	file:
@@ -335,6 +335,9 @@ buildCountryCodeToRegionCodeMap	reference/libphonenumber/java/resources/com/goog
 buildPhoneMetadataCollection	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/BuildMetadataFromXml.java	/^  public static PhoneMetadataCollection buildPhoneMetadataCollection(String inputXmlFile,$/;"	m	class:BuildMetadataFromXml
 build_country_code_to_region_code_map	python/phonenumbers/buildmetadatafromxml.py	/^def build_country_code_to_region_code_map(metadata_collection):$/;"	f
 build_phone_metadata_collection	python/phonenumbers/buildmetadatafromxml.py	/^def build_phone_metadata_collection(input_xml_file, lite_build):$/;"	f
+buildconstants	python/phonenumbers/buildmetadataprotofromxml.py	/^from phonenumbers import buildconstants$/;"	i
+buildconstants	python/phonenumbers/test/phonenumberutil_test.py	/^from phonenumbers import buildconstants$/;"	i
+buildconstants.py	python/phonenumbers/buildconstants.py	1;"	F
 buildmetadatafromxml	python/phonenumbers/buildmetadataprotofromxml.py	/^from phonenumbers import buildmetadatafromxml$/;"	i
 buildmetadatafromxml.py	python/phonenumbers/buildmetadatafromxml.py	1;"	F
 buildmetadataprotofromxml.py	python/phonenumbers/buildmetadataprotofromxml.py	1;"	F
@@ -382,19 +385,18 @@ containsKey	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Regex
 containsRegex	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/RegexCache.java	/^  boolean containsRegex(String regex) {$/;"	m	class:RegexCache
 contains_key	python/phonenumbers/phonenumberutil.py	/^    def contains_key(self, key):$/;"	m	class:_RegexCache
 convertAlphaCharactersInNumber	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public static String convertAlphaCharactersInNumber(String number) {$/;"	m	class:PhoneNumberUtil
-convert_alpha_characters_in_number	python/phonenumbers/phonenumberutil.py	/^def convert_alpha_characters_in_number(number):$/;"	f
+convert_alpha_characters_in_number	python/phonenumbers/phonenumberutil.py	/^    def convert_alpha_characters_in_number(self, number):$/;"	m	class:PhoneNumberUtil
 countryCodeSource_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonenumber.java	/^    private CountryCodeSource countryCodeSource_;$/;"	f	class:Phonenumber.PhoneNumber	file:
 countryCodeToRegionCodeMap	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private Map<Integer, List<String>> countryCodeToRegionCodeMap = null;$/;"	f	class:PhoneNumberUtil	file:
 countryCode_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private int countryCode_ = 0;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
 countryCode_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonenumber.java	/^    private int countryCode_ = 0;$/;"	f	class:Phonenumber.PhoneNumber	file:
 countryToMetadataMap	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private Map<String, PhoneMetadata> countryToMetadataMap =$/;"	f	class:PhoneNumberUtil	file:
-country_code_to_region_code_map	python/phonenumbers/buildmetadatafromxml.py	/^            build_country_code_to_region_code_map(metadata_collection)$/;"	v
-country_code_to_region_code_map	python/phonenumbers/metadata_gen.py	/^country_code_to_region_code_map = {$/;"	v
-country_code_to_region_code_map	python/phonenumbers/metadatafortesting.py	/^country_code_to_region_code_map = {$/;"	v
-country_code_to_region_code_map	python/phonenumbers/metadatalite.py	/^country_code_to_region_code_map = {$/;"	v
-country_to_metadata	python/phonenumbers/metadata_gen.py	/^country_to_metadata = {$/;"	v
-country_to_metadata	python/phonenumbers/metadatafortesting.py	/^country_to_metadata = {$/;"	v
-country_to_metadata	python/phonenumbers/metadatalite.py	/^country_to_metadata = {$/;"	v
+country_code_to_region_code_map	python/phonenumbers/countrycodetoregioncodemap.py	/^country_code_to_region_code_map = {1: ['US',$/;"	v
+country_code_to_region_code_map	python/phonenumbers/test/countrycodetoregioncodemapfortesting.py	/^country_code_to_region_code_map = {1: ['US', 'BS'],$/;"	v
+countrycodetoregioncodemap	python/phonenumbers/phonenumberutil.py	/^from phonenumbers import countrycodetoregioncodemap$/;"	i
+countrycodetoregioncodemap.py	python/phonenumbers/countrycodetoregioncodemap.py	1;"	F
+countrycodetoregioncodemapfortesting	python/phonenumbers/test/phonenumberutil_test.py	/^from phonenumbers.test import countrycodetoregioncodemapfortesting$/;"	i
+countrycodetoregioncodemapfortesting.py	python/phonenumbers/test/countrycodetoregioncodemapfortesting.py	1;"	F
 createFormattingTemplate	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private boolean createFormattingTemplate(NumberFormat format) {$/;"	m	class:AsYouTypeFormatter	file:
 currentFilePrefix	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private String currentFilePrefix = META_DATA_FILE_PREFIX;$/;"	f	class:PhoneNumberUtil	file:
 currentFormattingPattern	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private String currentFormattingPattern = "";$/;"	f	class:AsYouTypeFormatter	file:
@@ -436,7 +438,7 @@ extensions	python/phonenumbers/phonemetadata_pb2.py	/^  extensions=[$/;"	v
 extensions	python/phonenumbers/phonenumber_pb2.py	/^  extensions=[$/;"	v
 extractCountryCode	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  int extractCountryCode(StringBuffer fullNumber, StringBuffer nationalNumber) {$/;"	m	class:PhoneNumberUtil
 extractPossibleNumber	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  static String extractPossibleNumber(String number) {$/;"	m	class:PhoneNumberUtil
-extract_possible_number	python/phonenumbers/phonenumberutil.py	/^def extract_possible_number(number):$/;"	f
+extract_possible_number	python/phonenumbers/phonenumberutil.py	/^    def extract_possible_number(self, number):$/;"	m	class:PhoneNumberUtil
 fields	python/phonenumbers/phonemetadata_pb2.py	/^  fields=[$/;"	v
 fields	python/phonenumbers/phonenumber_pb2.py	/^  fields=[$/;"	v
 file	python/phonenumbers/phonemetadata_pb2.py	/^  file=DESCRIPTOR,$/;"	v
@@ -444,7 +446,7 @@ file	python/phonenumbers/phonenumber_pb2.py	/^  file=DESCRIPTOR,$/;"	v
 filename	python/phonenumbers/phonemetadata_pb2.py	/^  filename=None,$/;"	v
 filename	python/phonenumbers/phonenumber_pb2.py	/^  filename=None,$/;"	v
 fixedLine_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private PhoneNumberDesc fixedLine_ = null;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
-format	python/phonenumbers/phonenumberutil.py	/^def format(number, number_format):$/;"	f
+format	python/phonenumbers/phonenumberutil.py	/^    def format(self, number, number_format):$/;"	m	class:PhoneNumberUtil
 format	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public String format(PhoneNumber number, PhoneNumberFormat numberFormat) {$/;"	m	class:PhoneNumberUtil
 format	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public void format(PhoneNumber number, PhoneNumberFormat numberFormat,$/;"	m	class:PhoneNumberUtil
 formatAccordingToFormats	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private String formatAccordingToFormats(String nationalNumber,$/;"	m	class:PhoneNumberUtil	file:
@@ -455,10 +457,10 @@ formatNationalNumberWithCarrierCode	reference/libphonenumber/java/src/com/google
 formatNumberByFormat	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private void formatNumberByFormat(int countryCode,$/;"	m	class:PhoneNumberUtil	file:
 formatOutOfCountryCallingNumber	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public String formatOutOfCountryCallingNumber(PhoneNumber number,$/;"	m	class:PhoneNumberUtil
 format_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private String format_ = "";$/;"	f	class:Phonemetadata.NumberFormat	file:
-format_by_pattern	python/phonenumbers/phonenumberutil.py	/^def format_by_pattern(number, number_format, user_defined_formats):$/;"	f
-format_in_original_format	python/phonenumbers/phonenumberutil.py	/^def format_in_original_format(number, country_calling_from):$/;"	f
-format_national_number_with_carrier_code	python/phonenumbers/phonenumberutil.py	/^def format_national_number_with_carrier_code(number, carrier_code):$/;"	f
-format_out_of_country_calling_number	python/phonenumbers/phonenumberutil.py	/^def format_out_of_country_calling_number(number, country_calling_from):$/;"	f
+format_by_pattern	python/phonenumbers/phonenumberutil.py	/^    def format_by_pattern(self, number, number_format, user_defined_formats):$/;"	m	class:PhoneNumberUtil
+format_in_original_format	python/phonenumbers/phonenumberutil.py	/^    def format_in_original_format(self, number, country_calling_from):$/;"	m	class:PhoneNumberUtil
+format_national_number_with_carrier_code	python/phonenumbers/phonenumberutil.py	/^    def format_national_number_with_carrier_code(self, number, carrier_code):$/;"	m	class:PhoneNumberUtil
+format_out_of_country_calling_number	python/phonenumbers/phonenumberutil.py	/^    def format_out_of_country_calling_number(self, number, country_calling_from):$/;"	m	class:PhoneNumberUtil
 formattingTemplate	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private StringBuffer formattingTemplate = new StringBuffer();$/;"	f	class:AsYouTypeFormatter	file:
 full_name	python/phonenumbers/phonemetadata_pb2.py	/^  full_name='i18n.phonenumbers.NumberFormat',$/;"	v
 full_name	python/phonenumbers/phonemetadata_pb2.py	/^  full_name='i18n.phonenumbers.PhoneMetadata',$/;"	v
@@ -540,12 +542,13 @@ getSharedCost	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Pho
 getSupportedCountries	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public Set<String> getSupportedCountries() {$/;"	m	class:PhoneNumberUtil
 getTollFree	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    public PhoneNumberDesc getTollFree() { return tollFree_; }$/;"	m	class:Phonemetadata.PhoneMetadata
 getVoip	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    public PhoneNumberDesc getVoip() { return voip_; }$/;"	m	class:Phonemetadata.PhoneMetadata
-get_length_of_geographical_area_code	python/phonenumbers/phonenumberutil.py	/^def get_length_of_geographical_area_code(number):$/;"	f
-get_length_of_national_destination_code	python/phonenumbers/phonenumberutil.py	/^def get_length_of_national_destination_code(number):$/;"	f
-get_metadata_for_region	python/phonenumbers/phonenumberutil.py	/^def get_metadata_for_region(region_code):$/;"	f
-get_national_significant_number	python/phonenumbers/phonenumberutil.py	/^def get_national_significant_number(number):$/;"	f
-get_region_code_for_country_code	python/phonenumbers/phonenumberutil.py	/^def get_region_code_for_country_code(country_code):$/;"	f
-get_region_code_for_number	python/phonenumbers/phonenumberutil.py	/^def get_region_code_for_number(number):$/;"	f
+get_instance	python/phonenumbers/phonenumberutil.py	/^    def get_instance(cls, base_file_location=None,$/;"	m	class:PhoneNumberUtil
+get_length_of_geographical_area_code	python/phonenumbers/phonenumberutil.py	/^    def get_length_of_geographical_area_code(self, number):$/;"	m	class:PhoneNumberUtil
+get_length_of_national_destination_code	python/phonenumbers/phonenumberutil.py	/^    def get_length_of_national_destination_code(self, number):$/;"	m	class:PhoneNumberUtil
+get_metadata_for_region	python/phonenumbers/phonenumberutil.py	/^    def get_metadata_for_region(self, region_code):$/;"	m	class:PhoneNumberUtil
+get_national_significant_number	python/phonenumbers/phonenumberutil.py	/^    def get_national_significant_number(self, number):$/;"	m	class:PhoneNumberUtil
+get_region_code_for_country_code	python/phonenumbers/phonenumberutil.py	/^    def get_region_code_for_country_code(self, country_code):$/;"	m	class:PhoneNumberUtil
+get_region_code_for_number	python/phonenumbers/phonenumberutil.py	/^    def get_region_code_for_number(self, number):$/;"	m	class:PhoneNumberUtil
 hasCountryCode	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private boolean hasCountryCode;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
 hasCountryCode	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    public boolean hasCountryCode() { return hasCountryCode; }$/;"	m	class:Phonemetadata.PhoneMetadata
 hasCountryCode	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonenumber.java	/^    private boolean hasCountryCode;$/;"	f	class:Phonenumber.PhoneNumber	file:
@@ -1126,7 +1129,7 @@ isValidRegionCode	reference/libphonenumber/java/src/com/google/i18n/phonenumbers
 isViablePhoneNumber	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  static boolean isViablePhoneNumber(String number) {$/;"	m	class:PhoneNumberUtil
 is_extendable	python/phonenumbers/phonemetadata_pb2.py	/^  is_extendable=False,$/;"	v
 is_extendable	python/phonenumbers/phonenumber_pb2.py	/^  is_extendable=False,$/;"	v
-is_viable_phone_number	python/phonenumbers/phonenumberutil.py	/^def is_viable_phone_number(number):$/;"	f
+is_viable_phone_number	python/phonenumbers/phonenumberutil.py	/^    def is_viable_phone_number(self, number):$/;"	m	class:PhoneNumberUtil
 italianLeadingZero_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonenumber.java	/^    private boolean italianLeadingZero_ = false;$/;"	f	class:Phonenumber.PhoneNumber	file:
 lastMatchPosition	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private int lastMatchPosition = 0;$/;"	f	class:AsYouTypeFormatter	file:
 leadingDigitsPattern_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private java.util.List<String> leadingDigitsPattern_ = new java.util.ArrayList<String>();$/;"	f	class:Phonemetadata.NumberFormat	file:
@@ -1138,6 +1141,7 @@ liteBuild	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/B
 loadCountryMetadata	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/BuildMetadataFromXml.java	/^  private static PhoneMetadata loadCountryMetadata(String regionCode, Element element) {$/;"	m	class:BuildMetadataFromXml	file:
 loadMetadataForRegionFromFile	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private void loadMetadataForRegionFromFile(String filePrefix, String regionCode) {$/;"	m	class:PhoneNumberUtil	file:
 logging	python/phonenumbers/buildmetadatafromxml.py	/^import logging$/;"	i
+logging	python/phonenumbers/buildmetadataprotofromxml.py	/^import logging$/;"	i
 main	BuildMetadataProtoAndPythonFromXml.java	/^	public static void main(String[] args) throws Exception {$/;"	m	class:BuildMetadataProtoAndPythonFromXml
 main	BuildMetadataPythonFromXml.java	/^  public static void main(String[] args) throws Exception {$/;"	m	class:BuildMetadataPythonFromXml
 main	python/phonenumbers/buildmetadataprotofromxml.py	/^def main():$/;"	f
@@ -1160,13 +1164,8 @@ message	python/phonenumbers/phonenumber_pb2.py	/^from google.protobuf import mes
 message	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/NumberParseException.java	/^  private String message;$/;"	f	class:NumberParseException	file:
 metadata.js	reference/libphonenumber/javascript/i18n/phonenumbers/metadata.js	1;"	F
 metadata_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private java.util.List<PhoneMetadata> metadata_ = new java.util.ArrayList<PhoneMetadata>();$/;"	f	class:Phonemetadata.PhoneMetadataCollection	file:
-metadata_collection	python/phonenumbers/buildmetadatafromxml.py	/^            build_phone_metadata_collection("PhoneNumberMetaData.xml", False)$/;"	v
-metadata_gen	python/phonenumbers/phonenumberutil.py	/^from phonenumbers import metadata_gen$/;"	i
-metadata_gen.py	python/phonenumbers/metadata_gen.py	1;"	F
 metadatafortesting.js	reference/libphonenumber/javascript/i18n/phonenumbers/metadatafortesting.js	1;"	F
-metadatafortesting.py	python/phonenumbers/metadatafortesting.py	1;"	F
 metadatalite.js	reference/libphonenumber/javascript/i18n/phonenumbers/metadatalite.js	1;"	F
-metadatalite.py	python/phonenumbers/metadatalite.py	1;"	F
 mobile_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private PhoneNumberDesc mobile_ = null;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
 name	python/phonenumbers/phonemetadata_pb2.py	/^  name='NumberFormat',$/;"	v
 name	python/phonenumbers/phonemetadata_pb2.py	/^  name='PhoneMetadata',$/;"	v
@@ -1177,7 +1176,6 @@ name	python/phonenumbers/phonenumber_pb2.py	/^  name='CountryCodeSource',$/;"	v
 name	python/phonenumbers/phonenumber_pb2.py	/^  name='PhoneNumber',$/;"	v
 name	python/phonenumbers/phonenumber_pb2.py	/^  name='phonenumber.proto',$/;"	v
 nanpaCountries	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private final Set<String> nanpaCountries = new HashSet<String>(35);$/;"	f	class:PhoneNumberUtil	file:
-nanpa_countries	python/phonenumbers/phonenumberutil.py	/^    metadata_gen.country_code_to_region_code_map.get(_NANPA_COUNTRY_CODE)$/;"	v
 narrowDownPossibleFormats	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private void narrowDownPossibleFormats(String leadingDigits) {$/;"	m	class:AsYouTypeFormatter	file:
 nationalNumber	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private StringBuffer nationalNumber = new StringBuffer();$/;"	f	class:AsYouTypeFormatter	file:
 nationalNumberPattern_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private String nationalNumberPattern_ = "";$/;"	f	class:Phonemetadata.PhoneNumberDesc	file:
@@ -1191,15 +1189,15 @@ nested_types	python/phonenumbers/phonemetadata_pb2.py	/^  nested_types=[],$/;"	v
 nested_types	python/phonenumbers/phonenumber_pb2.py	/^  nested_types=[],$/;"	v
 nextChar	python/phonenumbers/asyoutypeformatter.py	/^    nextChar = i18n.phonenumbers.PhoneNumberUtil.DIGIT_MAPPINGS[nextChar];$/;"	v
 nextChar	python/phonenumbers/asyoutypeformatter.py	/^  nextChar = this.normalizeAndAccrueDigitsAndPlusSign_(nextChar,$/;"	v
-normalize	python/phonenumbers/phonenumberutil.py	/^def normalize(number):$/;"	f
+normalize	python/phonenumbers/phonenumberutil.py	/^    def normalize(self, number):$/;"	m	class:PhoneNumberUtil
 normalize	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  static String normalize(String number) {$/;"	m	class:PhoneNumberUtil
 normalize	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  static void normalize(StringBuffer number) {$/;"	m	class:PhoneNumberUtil
 normalizeAndAccrueDigitsAndPlusSign	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private char normalizeAndAccrueDigitsAndPlusSign(char nextChar, boolean rememberPosition) {$/;"	m	class:AsYouTypeFormatter	file:
 normalizeAndAccrueDigitsAndPlusSign_	python/phonenumbers/asyoutypeformatter.py	/^    normalizeAndAccrueDigitsAndPlusSign_ = function(nextChar,$/;"	v
 normalizeDigitsOnly	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public static String normalizeDigitsOnly(String number) {$/;"	m	class:PhoneNumberUtil
 normalizeHelper	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private static String normalizeHelper(String number,$/;"	m	class:PhoneNumberUtil	file:
-normalize_digits_only	python/phonenumbers/phonenumberutil.py	/^def normalize_digits_only(number):$/;"	f
-normalize_string_buffer	python/phonenumbers/phonenumberutil.py	/^def normalize_string_buffer(number):$/;"	f
+normalize_digits_only	python/phonenumbers/phonenumberutil.py	/^    def normalize_digits_only(self, number):$/;"	m	class:PhoneNumberUtil
+normalize_string_buffer	python/phonenumbers/phonenumberutil.py	/^    def normalize_string_buffer(self, number):$/;"	m	class:PhoneNumberUtil
 numberFormat_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private java.util.List<NumberFormat> numberFormat_ = new java.util.ArrayList<NumberFormat>();$/;"	f	class:Phonemetadata.PhoneMetadata	file:
 numberPattern	python/phonenumbers/asyoutypeformatter.py	/^  numberPattern = numberPattern.replace(this.CHARACTER_CLASS_PATTERN_, '\\\\d');$/;"	v
 numberPattern	python/phonenumbers/asyoutypeformatter.py	/^  numberPattern = numberPattern.replace(this.STANDALONE_DIGIT_PATTERN_, '\\\\d');$/;"	v
@@ -1210,8 +1208,10 @@ options	python/phonenumbers/phonenumber_pb2.py	/^      options=None,$/;"	v
 options	python/phonenumbers/phonenumber_pb2.py	/^  options=None,$/;"	v
 optparse	python/phonenumbers/buildmetadataprotofromxml.py	/^import optparse$/;"	i
 originalPosition	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private int originalPosition = 0;$/;"	f	class:AsYouTypeFormatter	file:
+os	python/phonenumbers/buildconstants.py	/^import os.path$/;"	i
 os	python/phonenumbers/buildmetadataprotofromxml.py	/^import os.path$/;"	i
 os	python/phonenumbers/phonenumberutil.py	/^import os.path$/;"	i
+os	python/phonenumbers/test/phonenumberutil_test.py	/^import os.path$/;"	i
 package	python/phonenumbers/phonemetadata_pb2.py	/^  package='i18n.phonenumbers',$/;"	v
 package	python/phonenumbers/phonenumber_pb2.py	/^  package='i18n.phonenumbers',$/;"	v
 pager_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private PhoneNumberDesc pager_ = null;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
@@ -1221,11 +1221,11 @@ parseAndKeepRawInput	reference/libphonenumber/java/src/com/google/i18n/phonenumb
 parseAndKeepRawInput	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  public void parseAndKeepRawInput(String numberToParse, String defaultCountry,$/;"	m	class:PhoneNumberUtil
 parseHelper	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private void parseHelper(String numberToParse, String defaultCountry, boolean keepRawInput,$/;"	m	class:PhoneNumberUtil	file:
 parsePrefixAsIdd	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private boolean parsePrefixAsIdd(Pattern iddPattern, StringBuffer number) {$/;"	m	class:PhoneNumberUtil	file:
+path	python/phonenumbers/buildconstants.py	/^import os.path$/;"	i
 path	python/phonenumbers/buildmetadataprotofromxml.py	/^import os.path$/;"	i
 path	python/phonenumbers/phonenumberutil.py	/^import os.path$/;"	i
+path	python/phonenumbers/test/phonenumberutil_test.py	/^import os.path$/;"	i
 pattern_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private String pattern_ = "";$/;"	f	class:Phonemetadata.NumberFormat	file:
-pbexperiments.py	python/phonenumbers/pbexperiments.py	1;"	F
-pdb	python/phonenumbers/phonenumberutil.py	/^    import pdb;pdb.set_trace()$/;"	i
 personalNumber_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private PhoneNumberDesc personalNumber_ = null;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
 phoneNumberParser	reference/libphonenumber/javascript/i18n/phonenumbers/demo.html	/^function phoneNumberParser() {$/;"	f
 phoneNumberUtil	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/ExampleNumbersTest.java	/^  private PhoneNumberUtil phoneNumberUtil;$/;"	f	class:ExampleNumbersTest	file:
@@ -1236,21 +1236,19 @@ phoneUtil	reference/libphonenumber/javascript/i18n/phonenumbers/phonenumberutil_
 phonemetadata.pb.js	reference/libphonenumber/javascript/i18n/phonenumbers/phonemetadata.pb.js	1;"	F
 phonemetadata_pb2	python/phonenumbers/buildmetadatafromxml.py	/^from phonenumbers import phonemetadata_pb2$/;"	i
 phonemetadata_pb2	python/phonenumbers/buildmetadataprotofromxml.py	/^from phonenumbers import phonemetadata_pb2$/;"	i
-phonemetadata_pb2	python/phonenumbers/pbexperiments.py	/^from phonenumbers import phonemetadata_pb2$/;"	i
 phonemetadata_pb2	python/phonenumbers/phonenumberutil.py	/^from phonenumbers import phonemetadata_pb2$/;"	i
 phonemetadata_pb2.py	python/phonenumbers/phonemetadata_pb2.py	1;"	F
 phonenumber.pb.js	reference/libphonenumber/javascript/i18n/phonenumbers/phonenumber.pb.js	1;"	F
 phonenumber_pb2	python/phonenumbers/phonenumberutil.py	/^from phonenumbers import phonenumber_pb2$/;"	i
 phonenumber_pb2	python/phonenumbers/test/phonenumberutil_test.py	/^from phonenumbers import phonenumber_pb2$/;"	i
 phonenumber_pb2.py	python/phonenumbers/phonenumber_pb2.py	1;"	F
-phonenumberutil	python/phonenumbers/buildmetadataprotofromxml.py	/^from phonenumbers import phonenumberutil$/;"	i
 phonenumberutil	python/phonenumbers/test/phonenumberutil_test.py	/^from phonenumbers import phonenumberutil$/;"	i
 phonenumberutil.js	reference/libphonenumber/javascript/i18n/phonenumbers/phonenumberutil.js	1;"	F
 phonenumberutil.py	python/phonenumbers/phonenumberutil.py	1;"	F
-phonenumberutil_test	python/phonenumbers/buildmetadataprotofromxml.py	/^from phonenumbers.test import phonenumberutil_test$/;"	i
 phonenumberutil_test.html	reference/libphonenumber/javascript/i18n/phonenumbers/phonenumberutil_test.html	1;"	F
 phonenumberutil_test.js	reference/libphonenumber/javascript/i18n/phonenumbers/phonenumberutil_test.js	1;"	F
 phonenumberutil_test.py	python/phonenumbers/test/phonenumberutil_test.py	1;"	F
+phoneutil	python/phonenumbers/test/phonenumberutil_test.py	/^phoneutil = phonenumberutil.PhoneNumberUtil.get_instance($/;"	v
 positionToRemember	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private int positionToRemember = 0;$/;"	f	class:AsYouTypeFormatter	file:
 possibleFormats	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/AsYouTypeFormatter.java	/^  private List<NumberFormat> possibleFormats = new ArrayList<NumberFormat>();$/;"	f	class:AsYouTypeFormatter	file:
 possibleNumberPattern_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private String possibleNumberPattern_ = "";$/;"	f	class:Phonemetadata.PhoneNumberDesc	file:
@@ -1331,8 +1329,6 @@ setTollFree	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phone
 setUp	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/ExampleNumbersTest.java	/^  protected void setUp() throws Exception {$/;"	m	class:ExampleNumbersTest
 setUp	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/PhoneNumberUtilTest.java	/^  protected void setUp() throws Exception {$/;"	m	class:PhoneNumberUtilTest
 setVoip	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    public PhoneMetadata setVoip(PhoneNumberDesc value) {$/;"	m	class:Phonemetadata.PhoneMetadata
-set_file_prefix	python/phonenumbers/phonenumberutil.py	/^def set_file_prefix(file_prefix):$/;"	f
-set_trace	python/phonenumbers/phonenumberutil.py	/^    import pdb;pdb.set_trace()$/;"	i
 sharedCost_	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/Phonemetadata.java	/^    private PhoneNumberDesc sharedCost_ = null;$/;"	f	class:Phonemetadata.PhoneMetadata	file:
 size	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/RegexCache.java	/^    private int size;$/;"	f	class:RegexCache.LRUCache	file:
 startOfNationalNumber	python/phonenumbers/asyoutypeformatter.py	/^      startOfNationalNumber = m[0].length;$/;"	v
@@ -1341,7 +1337,6 @@ subSequence	PythonArrayBuilder.java	/^  public CharSequence subSequence(int star
 subSequence	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/JSArrayBuilder.java	/^  public CharSequence subSequence(int start, int end) {$/;"	m	class:JSArrayBuilder
 subSequence	reference/libphonenumber/java/resources/com/google/i18n/phonenumbers/PythonArrayBuilder.java	/^  public CharSequence subSequence(int start, int end) {$/;"	m	class:PythonArrayBuilder
 supportedCountries	reference/libphonenumber/java/src/com/google/i18n/phonenumbers/PhoneNumberUtil.java	/^  private final Set<String> supportedCountries = new HashSet<String>(300);$/;"	f	class:PhoneNumberUtil	file:
-supported_countries	python/phonenumbers/phonenumberutil.py	/^supported_countries = []$/;"	v
 tearDown	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/ExampleNumbersTest.java	/^  protected void tearDown() throws Exception {$/;"	m	class:ExampleNumbersTest
 tearDown	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/PhoneNumberUtilTest.java	/^  protected void tearDown() throws Exception {$/;"	m	class:PhoneNumberUtilTest
 tempNationalNumber	python/phonenumbers/asyoutypeformatter.py	/^      tempNationalNumber =$/;"	v
@@ -1522,10 +1517,7 @@ testTruncateTooLongNumber	reference/libphonenumber/javascript/i18n/phonenumbers/
 testUnknownCountryCallingCodeForValidation	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/PhoneNumberUtilTest.java	/^  public void testUnknownCountryCallingCodeForValidation() {$/;"	m	class:PhoneNumberUtilTest
 testUnknownCountryCallingCodeForValidation	reference/libphonenumber/javascript/i18n/phonenumbers/phonenumberutil_test.js	/^function testUnknownCountryCallingCodeForValidation() {$/;"	f
 testVoip	reference/libphonenumber/java/test/com/google/i18n/phonenumbers/ExampleNumbersTest.java	/^  public void testVoip() throws Exception {$/;"	m	class:ExampleNumbersTest
-test_get_instance_load_AR_metadata	python/phonenumbers/test/phonenumberutil_test.py	/^    def test_get_instance_load_AR_metadata(self):$/;"	m	class:PhoneNumberUtilTest
-test_get_instance_load_DE_metadata	python/phonenumbers/test/phonenumberutil_test.py	/^    def test_get_instance_load_DE_metadata(self):$/;"	m	class:PhoneNumberUtilTest
 test_get_instance_load_US_metadata	python/phonenumbers/test/phonenumberutil_test.py	/^    def test_get_instance_load_US_metadata(self):$/;"	m	class:PhoneNumberUtilTest
-test_get_length_of_geographical_area_code	python/phonenumbers/test/phonenumberutil_test.py	/^    def test_get_length_of_geographical_area_code(self):$/;"	m	class:PhoneNumberUtilTest
 toJsArray	BuildMetadataPythonFromXml.java	/^  private static void toJsArray(NumberFormat format, PythonArrayBuilder pythonArrayBuilder) {$/;"	m	class:BuildMetadataPythonFromXml	file:
 toJsArray	BuildMetadataPythonFromXml.java	/^  private static void toJsArray(PhoneMetadata metadata, PythonArrayBuilder pythonArrayBuilder) {$/;"	m	class:BuildMetadataPythonFromXml	file:
 toJsArray	BuildMetadataPythonFromXml.java	/^  private static void toJsArray(PhoneNumberDesc desc, PythonArrayBuilder pythonArrayBuilder) {$/;"	m	class:BuildMetadataPythonFromXml	file:

@@ -300,32 +300,41 @@ _FG_PATTERN = re.compile(u"\\$FG")
 _CC_PATTERN = re.compile(u"\\$CC")
 
 
-class _RegexCache(object):
+class _LRUCache(object):
     """Simple LRU map."""
     def __init__(self, size):
         self.size = size
-        self._data = {}
+        self._map = {}
         self._history = []
 
     def get(self, key):
-        return self._data.get(key)
+        return self._map.get(key)
 
     def put(self, key, value):
-        self._data[key] = value
+        self._map[key] = value
         self._history.append(key)
         # LRU strategy
         if len(self._history) > self.size:
-            del self._data[self._history.pop(0)]
+            del self._map[self._history.pop(0)]
 
     def contains_key(self, key):
-        return key in self._data
+        return key in self._map
 
 
-# A cache for frequently used country-specific regular expressions.  As most
-# people use phone numbers primarily from one to two countries, and there are
-# roughly 60 regular expressions needed, the initial capacity of 100 offers a
-# rough load factor of 0.75.
-_regex_cache = _RegexCache(100)
+class _RegexCache(object):
+    """LRU Cache for compiled regular expressions."""
+    def __init__(self, size):
+        self._cache = _LRUCache(size)
+
+    def get_pattern_for_regex(self, regex):
+        pattern = self._cache.get(regex)
+        if not pattern:
+            pattern = re.compile(regex)
+            self._cache.put(regex, pattern)
+        return pattern
+
+    def contains_regex(self, regex):
+        return self._cache.contains_key(regex)
 
 
 # INTERNATIONAL and NATIONAL formats are consistent with the definition in
@@ -377,54 +386,49 @@ VALIDATION_RESULT_TOO_LONG = 3
 class PhoneNumberUtil(object):
     """"Utility for international phone numbers.
     
-    Functionality includes formatting, parsing and validation. Use it like a
-    singleton; call PhoneNumberUtil.get_instance(), as opposed to
-    PhoneNumberUtil(), to get an instance. This is not enforced, i.e., calling
-    PhoneNumberUtil() more than once will create multiple copies and will not 
-    raise an exception. So, be aware of that.
+    Functionality includes formatting, parsing and validation. Call
+    PhoneNumberUtil.get_instance(), as opposed to PhoneNumberUtil(), to get an
+    instance. This is not enforced, i.e., calling PhoneNumberUtil() more than
+    once will create multiple copies and will not raise an exception.
     """
-
     _instance = None
+
+    def __init__(self):
+        self._country_to_metadata_map = {}
+
+        # A cache for frequently used country-specific regular expressions.  As most
+        # people use phone numbers primarily from one to two countries, and there are
+        # roughly 60 regular expressions needed, the initial capacity of 100 offers a
+        # rough load factor of 0.75.
+        self._regex_cache = _RegexCache(100)
 
     @classmethod
     def get_instance(cls, base_file_location=None,
                      country_code_to_region_code_map=None):
         if not cls._instance:
-            cls._instance = cls(base_file_location,
-                    country_code_to_region_code_map)
-        return self._instance
+            instance = cls()
+            instance._country_code_to_region_code_map = \
+                    country_code_to_region_code_map
+            instance._init(base_file_location)
+            cls._instance = instance
+        return cls._instance
 
-    def __init__(self, base_file_location, country_code_to_region_code_map):
-        self._base_file_location = base_file_location
-        self._country_code_to_region_code_map = country_code_to_region_code_map
-        self._current_file_prefix = None
-        # A mapping from a region code to the PhoneMetadata for that region.
-        self._country_to_metadata_map = {}
-        self.supported_countries = []
-        self.nanpa_countries = None
-
-
-    def _initialize(self, file_prefix=None, country_code_to_region_code_map=None):
-        global _current_file_prefix
-        global _country_code_to_region_code_map
-        global supported_countries
-        global nanpa_countries
-        _current_file_prefix = file_prefix or META_DATA_FILE_PREFIX
-        _country_code_to_region_code_map = (country_code_to_region_code_map or
-                countrycodetoregioncodemap.country_code_to_region_code_map.copy())
-        _clear_cache()
-        # Init stuff from Java version getInstance()
-        for region_codes in _country_code_to_region_code_map.values():
+    def _init(self, file_prefix):
+        print "_init with file_prefix:", file_prefix
+        self._current_file_prefix = file_prefix
+        supported_countries = []
+        for region_codes in self._country_code_to_region_code_map.values():
             supported_countries.extend(region_codes)
-        nanpa_countries = \
-            _country_code_to_region_code_map.get(_NANPA_COUNTRY_CODE)
-    
+        self._supported_countries = list(set(supported_countries))
+        self._nanpa_countries = \
+                self._country_code_to_region_code_map[_NANPA_COUNTRY_CODE]
+        
     def _load_metadata_for_region_from_file(self, region_code):
-        source = open(_current_file_prefix + "_" + region_code, "rb")
+        f = open(self._current_file_prefix + "_" + region_code, "rb")
         metadata_collection = phonemetadata_pb2.PhoneMetadataCollection()
-        metadata_collection.ParseFromString(source.read())
+        metadata_collection.ParseFromString(f.read())
         for metadata in metadata_collection.metadata:
-            _country_to_metadata_map[region_code] = metadata
+            self._country_to_metadata_map[region_code] = metadata
     
     def extract_possible_number(self, number):
         """Attempts to extract a possible number from the string passed in.
@@ -498,9 +502,11 @@ class PhoneNumberUtil(object):
             the normalized string version of the phone number.
         """
         if _VALID_ALPHA_PHONE_PATTERN.match(number):
-            return _normalize_helper(number, _ALL_NORMALIZATION_MAPPINGS, True)
+            return self._normalize_helper(
+                    number, _ALL_NORMALIZATION_MAPPINGS, True)
         else:
-            return _normalize_helper(number, DIGIT_MAPPINGS, True)
+            return self._normalize_helper(
+                    number, DIGIT_MAPPINGS, True)
     
     def normalize_string_buffer(self, number):
         """Normalizes a string of characters representing a phone number. 
@@ -510,7 +516,7 @@ class PhoneNumberUtil(object):
         Args:
             number a StringIO instance of characters representing a phone number.
         """
-        normalized_number = normalize(number.to_string())
+        normalized_number = self.normalize(number.to_string())
         number.clear()
         number.append(normalized_number)
     
@@ -524,7 +530,7 @@ class PhoneNumberUtil(object):
         Returns:
             the normalized string version of the phone number.
         """
-        return _normalize_helper(number, DIGIT_MAPPINGS, True)
+        return self._normalize_helper(number, DIGIT_MAPPINGS, True)
     
     def convert_alpha_characters_in_number(self, number):
         """Converts all alpha characters in a number to their respective digits 
@@ -537,7 +543,7 @@ class PhoneNumberUtil(object):
         Returns:
             the normalized string version of the phone number.
         """
-        return _normalize_helper(number, _ALL_NORMALIZATION_MAPPINGS, False)
+        return self._normalize_helper(number, _ALL_NORMALIZATION_MAPPINGS, False)
     
     def get_length_of_geographical_area_code(self, number):
         """Gets the length of the geographical area code from the national_number
@@ -579,21 +585,19 @@ class PhoneNumberUtil(object):
         Returns:
             the length of area code of the PhoneNumber object passed in.
         """
-        if not number:
+        region_code = self.get_region_code_for_number(number)
+        if not self._is_valid_region_code(region_code):
             return 0
-        region_code = get_region_code_for_number(number)
-        if not _is_valid_region_code(region_code):
-            return 0
-        metadata = get_metadata_for_region(region_code)
+        metadata = self.get_metadata_for_region(region_code)
         if not metadata.HasField("national_prefix"):
             return 0
-        type_ = _get_number_type_helper(
-            get_national_significant_number(number), metadata)
+        type_ = self._get_number_type_helper(
+            self.get_national_significant_number(number), metadata)
         # Most numbers other than the two types below have to be dialled in full.
         if (type_ != TYPE_FIXED_LINE and
             type_ != TYPE_FIXED_LINE_OR_MOBILE):
             return 0
-        return get_length_of_national_destination_code(number)
+        return self.get_length_of_national_destination_code(number)
     
     def get_length_of_national_destination_code(self, number):
         """Gets the length of the national destination code (NDC) from the
@@ -637,25 +641,27 @@ class PhoneNumberUtil(object):
         else:
             copied_proto = number
     
-        national_significant_number = format(copied_proto, FORMAT_INTERNATIONAL)
+        national_significant_number = self.format(copied_proto, 
+                FORMAT_INTERNATIONAL)
     
         number_groups = _NON_DIGITS_PATTERN.split(national_significant_number)
     
-        # The pattern will start with '+COUNTRY_CODE ' so the first group will always
-        # be the empty string (before the + symbol) and the second group will be the
-        # country code. The third group will be area code if it's not the last group.
+        # The pattern will start with '+COUNTRY_CODE ' so the first group will
+        # always be the empty string (before the + symbol) and the second group
+        # will be the country code. The third group will be area code if it's
+        # not the last group.
         if len(number_groups) <= 3:
             return 0
         
-        if (get_region_code_for_number(number) == "AR" and
-            get_number_type(number) == TYPE_MOBILE):
-            # Argentinian mobile numbers, when formatted in the international format,
-            # are in the form of +54 9 NDC XXXX.... As a result, we take the length of
-            # the third group (NDC) and add 1 for the digit 9, which also forms part of
-            # the national significant number.
+        if (self.get_region_code_for_number(number) == "AR" and
+            self.get_number_type(number) == TYPE_MOBILE):
+            # Argentinian mobile numbers, when formatted in the international
+            # format, are in the form of +54 9 NDC XXXX.... As a result, we
+            # take the length of the third group (NDC) and add 1 for the digit
+            # 9, which also forms part of the national significant number.
             #
-            # TODO: Investigate the possibility of better modeling the metadata to make
-            # it easier to obtain the NDC.
+            # TODO: Investigate the possibility of better modeling the metadata
+            # to make it easier to obtain the NDC.
             return len(number_groups[3]) + 1
         
         return len(number_groups[2])
@@ -697,7 +703,7 @@ class PhoneNumberUtil(object):
         Returns:
             True if region code is valid.
         """
-        return region_code in supported_countries
+        return region_code in self._supported_countries
     
     
     def format(self, number, number_format):
@@ -719,25 +725,26 @@ class PhoneNumberUtil(object):
             the formatted phone number.
         """
         country_code = number.country_code
-        national_significant_number = get_national_significant_number(number)
+        national_significant_number = \
+                self.get_national_significant_number(number)
         if number_format == FORMAT_E164:
             # Early exit for E164 case since no formatting of the national 
             # number needs to be applied. Extensions are not formatted.
-            return _format_number_by_format(
+            return self._format_number_by_format(
                     country_code, FORMAT_E164, national_significant_number, "")
         
         # Note get_region_code_for_country_code() is used because formatting
         # information for countries which share a country code is contained by only
         # one country for performance reasons. For example, for NANPA countries it
         # will be contained in the metadata for US.
-        region_code = get_region_code_for_country_code(country_code)
-        if not _is_valid_region_code(region_code):
+        region_code = self.get_region_code_for_country_code(country_code)
+        if not self._is_valid_region_code(region_code):
             return national_significant_number
         
-        formatted_national_number = _format_national_number(
+        formatted_national_number = self._format_national_number(
                 national_significant_number, region_code, number_format)
-        formatted_extension = _maybe_get_formatted_extension(number, region_code)
-        return _format_number_by_format(country_code, number_format, 
+        formatted_extension = self._maybe_get_formatted_extension(number, region_code)
+        return self._format_number_by_format(country_code, number_format, 
                 formatted_national_number, formatted_extension)
     
     
@@ -758,14 +765,15 @@ class PhoneNumberUtil(object):
             the formatted phone number.
         """
         country_code = number.country_code
-        national_significant_number = get_national_significant_number(number)
+        national_significant_number = self.get_national_significant_number(number)
         
         # Note get_region_code_for_country_code() is used because formatting
-        # information for countries which share a country code is contained by only
-        # one country for performance reasons. For example, for NANPA countries it
-        # will be contained in the metadata for US.
-        region_code = get_region_code_for_country_code(country_code)
-        if not _is_valid_region_code(region_code):
+        # information for countries which share a country code is contained
+        # by only one country for performance reasons. For example, for NANPA 
+        # countries it will be contained in the metadata for US.
+        
+        region_code = self.get_region_code_for_country_code(country_code)
+        if not self._is_valid_region_code(region_code):
             return national_significant_number
         
         user_defined_formats_copy = []
@@ -781,7 +789,8 @@ class PhoneNumberUtil(object):
                 num_format_copy = phonemetadata_pb2.NumberFormat()
                 num_format_copy.MergeFrom(num_format)
                 national_prefix = \
-                        get_metadata_for_region(region_code).national_prefix
+                        self.get_metadata_for_region(
+                                region_code).national_prefix
                 if national_prefix:
                     # Replace $NP with national prefix and $FG with the first
                     # group ($1).
@@ -801,30 +810,32 @@ class PhoneNumberUtil(object):
                 # Otherwise, we just add the original rule to the modified list of
                 # formats.
                 user_defined_formats_copy.append(num_format)
-        formatted_number = _format_according_to_formats(
+        formatted_number = self._format_according_to_formats(
                 national_significant_number, user_defined_formats_copy, 
                 number_format)
-        _maybe_get_formatted_extension(number, region_code, formatted_number)
-        return _format_number_by_format(country_code, number_format, 
+        self._maybe_get_formatted_extension(number, region_code, 
+                formatted_number)
+        return self._format_number_by_format(country_code, number_format, 
                 formatted_number)
     
     
     def format_national_number_with_carrier_code(self, number, carrier_code):
         country_code = number.country_code
-        national_significant_number = get_national_significant_number(number)
-        # Note get_region_code_for_country_code() is used because formatting information
-        # for countries which share a country code is contained by only one country
-        # for performance reasons. For example, for NANPA countries it will be
-        # contained in the metadata for US.
-        region_code = get_region_code_for_country_code(country_code)
-        if not _is_valid_region_code(region_code):
+        national_significant_number = self.get_national_significant_number(number)
+        
+        # Note get_region_code_for_country_code() is used because formatting 
+        # information for countries which share a country code is contained 
+        # by only one country for performance reasons. For example, for NANPA
+        # countries it will be contained in the metadata for US.
+        region_code = self.get_region_code_for_country_code(country_code)
+        if not self._is_valid_region_code(region_code):
             return national_significant_number
     
-        formatted_extension = _maybe_get_formatted_extension(number, region_code)
-        formatted_national_number = _format_national_number(
+        formatted_extension = self._maybe_get_formatted_extension(number, region_code)
+        formatted_national_number = self._format_national_number(
                 national_significant_number, region_code, FORMAT_NATIONAL, 
                 carrier_code)
-        return _format_number_by_format(country_code, FORMAT_NATIONAL,
+        return self._format_number_by_format(country_code, FORMAT_NATIONAL,
                 formatted_national_number, formatted_extension)
     
     
@@ -852,21 +863,22 @@ class PhoneNumberUtil(object):
         Returns:
             the formatted phone number.
         """
-        if not _is_valid_region_code(country_calling_from):
+        if not self._is_valid_region_code(country_calling_from):
             return format(number, FORMAT_INTERNATIONAL)
         country_code = number.country_code
-        region_code = get_region_code_for_country_code(country_code)
-        national_significant_number = get_national_significant_number(number)
-        if not _is_valid_region_code(region_code):
+        region_code = self.get_region_code_for_country_code(country_code)
+        national_significant_number = \
+                self.get_national_significant_number(number)
+        if not self._is_valid_region_code(region_code):
             return national_significant_number
         
         if country_code == _NANPA_COUNTRY_CODE:
-            if is_nanpa_country(country_calling_from):
+            if self.is_nanpa_country(country_calling_from):
                 # For NANPA countries, return the national format for these
                 # countries but prefix it with the country code.
                 return country_code + " "  + format(number, FORMAT_NATIONAL)
             
-        elif country_code == get_country_code_for_region(country_calling_from):
+        elif country_code == self.get_country_code_for_region(country_calling_from):
             # For countries that share a country calling code, the country code
             # need not be dialled. This also applies when dialling within a
             # country, so this if clause covers both these cases. Technically this
@@ -877,17 +889,17 @@ class PhoneNumberUtil(object):
             # http:#www.petitfute.com/voyage/225-info-pratiques-reunion
             return format(number, FORMAT_NATIONAL)
         
-        formatted_national_number = _format_national_number(
+        formatted_national_number = self._format_national_number(
                 national_significant_number, region_code, FORMAT_INTERNATIONAL)
-        metadata = get_metadata_for_region(country_calling_from)
+        metadata = self.get_metadata_for_region(country_calling_from)
         international_prefix = metadata.get_international_prefix_or_default()
-        formatted_extension = _maybe_get_formatted_extension(number, region_code)
+        formatted_extension = self._maybe_get_formatted_extension(number, region_code)
     
         # For countries that have multiple international prefixes, the
         # international format of the number is returned, unless there is a
         # preferred international prefix.
         international_prefix_for_formatting = ""
-        if _matches_entirely(_UNIQUE_INTERNATIONAL_PREFIX, international_prefix):
+        if self._matches_entirely(_UNIQUE_INTERNATIONAL_PREFIX, international_prefix):
             international_prefix_for_formatting = international_prefix
         elif metadata.HasField("preferred_international_prefix"):
             international_prefix_for_formatting = \
@@ -897,7 +909,7 @@ class PhoneNumberUtil(object):
             return "%s %s %s%s" % (international_prefix_for_formatting, 
                     country_code, formatted_national_number, formatted_extension)
         else:
-            return _format_number_by_format(country_code, FORMAT_INTERNATIONAL,
+            return self._format_number_by_format(country_code, FORMAT_INTERNATIONAL,
                     formatted_national_number, formatted_extension)
     
     
@@ -925,7 +937,7 @@ class PhoneNumberUtil(object):
             return format(number, FORMAT_INTERNATIONAL)
         if country_code_source == \
                 phonenumber_pb2.PhoneNumber.FROM_NUMBER_WITH_IDD:
-            return format_out_of_country_calling_number(number, 
+            return self.format_out_of_country_calling_number(number, 
                     country_calling_from)
         if country_code_source == \
                 phonenumber_pb2.PhoneNumber.FROM_NUMBER_WITHOUT_PLUS_SIGN:
@@ -956,12 +968,11 @@ class PhoneNumberUtil(object):
         national_number = str(number.national_number)
         if (number.HasField("italian_leading_zero") and
             number.italian_leading_zero and
-            is_leading_zero_country(number.country_code)):
+            self.is_leading_zero_country(number.country_code)):
             return u"0" + national_number
         return national_number
     
-    
-    def _format_number_by_format(country_code, number_format,
+    def _format_number_by_format(self, country_code, number_format,
             formatted_national_number, formatted_extension):
         """
         A helper function that is used by format and format_by_pattern.
@@ -983,8 +994,7 @@ class PhoneNumberUtil(object):
         # Default FORMAT_NATIONAL
         return formatted_national_number + formatted_extension
     
-    
-    def _format_national_number(number, region_code, number_format, 
+    def _format_national_number(self, number, region_code, number_format, 
                                 carrier_code=None):
         """Note in some countries, the national number can be written in two
         completely different ways depending on whether it forms part of the
@@ -1001,7 +1011,7 @@ class PhoneNumberUtil(object):
         Returns:
             the formatted phone number string.
         """
-        metadata = get_metadata_for_region(region_code)
+        metadata = self.get_metadata_for_region(region_code)
         intl_number_formats = metadata.intl_number_format
         # When the intl_number_formats exists, we use that to format national
         # number for the INTERNATIONAL format instead of using the
@@ -1010,11 +1020,11 @@ class PhoneNumberUtil(object):
             available_formats = metadata.number_format
         else:
             available_formats = metadata.intl_number_format
-        return _format_according_to_formats(number, available_formats, 
+        return self._format_according_to_formats(number, available_formats, 
                 number_format, carrier_code)
     
     
-    def _format_according_to_formats(national_number, available_formats, 
+    def _format_according_to_formats(self, national_number, available_formats, 
                                      number_format, carrier_code=None):
         """Note that carrier_code is optional - if None or an empty string, no
         carrier code replacement will take place. Carrier code replacement occurs
@@ -1030,13 +1040,16 @@ class PhoneNumberUtil(object):
         """
         for num_format in available_formats:
             size = len(num_format.leading_digits_pattern)
-            if (not size or 
+            if (not size or self._regex_cache.get_pattern_for_regex(
                 # We always use the last leading_digits_pattern, as it is the most
                 # detailed.
-                national_number.find(num_format.leading_digits_pattern[-1]) == 0):
+                num_format.leading_digits_pattern[-1]).match(national_number)):
+
+                # TODO use _regex_cache. also use string buffer... mirror Java
+                # in general
                 pattern_to_match = re.compile(num_format.pattern)
                 number_format_rule = num_format.format
-                if _matches_entirely(pattern_to_match, national_number):
+                if self._matches_entirely(pattern_to_match, national_number):
                     if (carrier_code and
                         num_format.domestic_carrier_code_formatting_rule):
                         domestic_carrier_code_formatting_rule = \
@@ -1058,14 +1071,14 @@ class PhoneNumberUtil(object):
                     if (number_format == FORMAT_NATIONAL and 
                         national_prefix_formatting_rule):
                         number_format_rule = \
-                                _backslash_notation(number_format_rule)
+                                self._backslash_notation(number_format_rule)
                         return _FIRST_GROUP_PATTERN.sub(
                                 national_prefix_formatting_rule, 
                                 pattern_to_match.sub(
                                         number_format_rule, national_number))
                     else:
                         number_format_rule = \
-                                _backslash_notation(number_format_rule)
+                                self._backslash_notation(number_format_rule)
                         return pattern_to_match.sub(number_format_rule, 
                                 national_number)
         # If no pattern above is matched, we format the number as a whole.
@@ -1129,7 +1142,7 @@ class PhoneNumberUtil(object):
         if not number.HasField("extension"):
             return ''
         else:
-            return _format_extension(number.extension, region_code)
+            return self._format_extension(number.extension, region_code)
     
     
     #/**
@@ -1215,39 +1228,39 @@ class PhoneNumberUtil(object):
     def _get_number_type_helper(self, national_number, metadata):
         general_number_desc = metadata.general_desc
         if (not general_number_desc.HasField("national_number_pattern") or
-            not _is_number_matching_desc(national_number, general_number_desc)):
+            not self._is_number_matching_desc(national_number, general_number_desc)):
             return TYPE_UNKNOWN
      
-        if _is_number_matching_desc(national_number, metadata.premium_rate):
+        if self._is_number_matching_desc(national_number, metadata.premium_rate):
             return TYPE_PREMIUM_RATE
         
-        if _is_number_matching_desc(national_number, metadata.toll_free):
+        if self._is_number_matching_desc(national_number, metadata.toll_free):
             return TYPE_TOLL_FREE
         
-        if _is_number_matching_desc(national_number, metadata.shared_cost):
+        if self._is_number_matching_desc(national_number, metadata.shared_cost):
             return TYPE_SHARED_COST
         
-        if _is_number_matching_desc(national_number, metadata.voip):
+        if self._is_number_matching_desc(national_number, metadata.voip):
             return TYPE_VOIP
         
-        if (_is_number_matching_desc(national_number, metadata.personal_number)):
+        if (self._is_number_matching_desc(national_number, metadata.personal_number)):
             return TYPE_PERSONAL_NUMBER
         
-        if (_is_number_matching_desc(national_number, metadata.pager)):
+        if (self._is_number_matching_desc(national_number, metadata.pager)):
             return TYPE_PAGER
      
-        is_fixed_line = _is_number_matching_desc(national_number, metadata.fixed_line)
+        is_fixed_line = self._is_number_matching_desc(national_number, metadata.fixed_line)
         if is_fixed_line:
             if metadata.same_mobile_and_fixed_line_pattern:
                 return TYPE_FIXED_LINE_OR_MOBILE
-            elif _is_number_matching_desc(national_number, metadata.mobile):
+            elif self._is_number_matching_desc(national_number, metadata.mobile):
                 return TYPE_FIXED_LINE_OR_MOBILE
             return TYPE_FIXED_LINE
         
         # Otherwise, test to see if the number is mobile. Only do this if certain
         # that the patterns for mobile and fixed line aren't the same.
         if (not metadata.same_mobile_and_fixed_line_pattern and
-            _is_number_matching_desc(national_number, metadata.mobile)):
+            self._is_number_matching_desc(national_number, metadata.mobile)):
             return TYPE_MOBILE
         
         return TYPE_UNKNOWN
@@ -1257,15 +1270,15 @@ class PhoneNumberUtil(object):
         if not region_code:
             return
         region_code = region_code.upper()
-        if not region_code in _country_to_metadata_map:
-            _load_metadata_for_region_from_file(region_code)
-        return _country_to_metadata_map[region_code]
+        if not region_code in self._country_to_metadata_map:
+            self._load_metadata_for_region_from_file(region_code)
+        return self._country_to_metadata_map[region_code]
     
     
     def _is_number_matching_desc(self, national_number, number_desc):
-        return (_matches_entirely(
+        return (self._matches_entirely(
                     number_desc.possible_number_pattern, national_number) and
-                _matches_entirely(
+                self._matches_entirely(
                     number_desc.national_number_pattern, national_number))
     
     #/**
@@ -1346,28 +1359,27 @@ class PhoneNumberUtil(object):
             the country/region where the phone number is from, or None if no 
             country matches this calling code.
         """
-        import pdb; pdb.set_trace()
         if not number: 
             return
         country_code = number.country_code
-        regions = _country_code_to_region_code_map.get(country_code)
+        regions = self._country_code_to_region_code_map.get(country_code)
         if not regions: 
             return
         if len(regions) == 1:
             return regions[0]
         else:
-            return _get_region_code_for_number_from_region_list(number, regions)
+            return self._get_region_code_for_number_from_region_list(number, regions)
         
     
     def _get_region_code_for_number_from_region_list(self, number, region_codes):
         national_number = str(number.national_number)
         for region_code in region_codes:
             # If leading_digits is present, use  Otherwise, do full validation.
-            metadata = get_metadata_for_region(region_code)
+            metadata = self.get_metadata_for_region(region_code)
             if metadata.HasField("leading_digits"):
                 if national_number.find(metadata.leading_digits) == 0:
                     return region_code
-            elif _get_number_type_helper(national_number, metadata) != TYPE_UNKNOWN:
+            elif self._get_number_type_helper(national_number, metadata) != TYPE_UNKNOWN:
                 return region_code
         return None
     
@@ -1385,7 +1397,7 @@ class PhoneNumberUtil(object):
             region code string or 'ZZ' if none found.
         """
         region_codes = \
-                _country_code_to_region_code_map.get(country_code)
+                self._country_code_to_region_code_map.get(country_code)
         if not region_codes:
             return 'ZZ'
         return region_codes[0]

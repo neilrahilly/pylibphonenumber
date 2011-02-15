@@ -29,7 +29,7 @@ from phonenumbers import phonemetadata_pb2
 
 USAGE = """Example command line invocation:
 ./buildmetadataprotofromxml.py -i PhoneNumberMetadata.xml -o .
-./buildmetadataprotofromxml.py -i PhoneNumberMetadataForTesting.xml -o test -v"""
+./buildmetadataprotofromxml.py -i PhoneNumberMetadataForTesting.xml -o test -vtl"""
 
 
 COPYRIGHT_NOTICE = """\
@@ -86,7 +86,7 @@ def main():
     parser.add_option("-v", "--verbose", dest="verbose", 
             action="store_true", default=False,
             help="Log debug information (default: false).")
-    options, args = parser.parse_args()
+    options = parser.parse_args()[0]
     options.input_file = os.path.abspath(options.input_file)
     options.output_dir = os.path.abspath(options.output_dir)
     if options.verbose:
@@ -132,7 +132,7 @@ def _write_country_calling_code_mapping_to_python_file(metadata_collection,
     mapping_name = buildconstants.COUNTRY_CODE_TO_REGION_CODE_MAP_NAME
     module_name = mapping_name.replace("_", "")
     if options.for_testing:
-        mapping_name += "fortesting"
+        module_name += "fortesting"
     module_name += ".py"
     mapping_file_name = os.path.join(options.output_dir, module_name)
 

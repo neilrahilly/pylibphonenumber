@@ -18,20 +18,20 @@
 import os.path
 import unittest
 
+from phonenumbers import buildconstants
 from phonenumbers import phonenumber_pb2
 from phonenumbers import phonenumberutil
 from phonenumbers.test import countrycodetoregioncodemapfortesting
 
 
-
-phonenumberutil.init(
-    TEST_META_DATA_FILE_PREFIX, 
+phoneutil = phonenumberutil.PhoneNumberUtil.get_instance(
+    buildconstants.TEST_META_DATA_FILE_PREFIX, 
     countrycodetoregioncodemapfortesting.country_code_to_region_code_map.copy())
 
 
 class PhoneNumberUtilTest(unittest.TestCase):
     def test_get_instance_load_US_metadata(self):
-        metadata = phonenumberutil.get_metadata_for_region("US")
+        metadata = phoneutil.get_metadata_for_region("US")
         self.assertEquals("US", metadata.id)
         self.assertEquals(1, metadata.country_code)
         self.assertEquals("011", metadata.international_prefix)
@@ -58,7 +58,7 @@ class PhoneNumberUtilTest(unittest.TestCase):
                 metadata.shared_cost.possible_number_pattern)
         
     def test_get_instance_load_DE_metadata(self):
-        metadata = phonenumberutil.get_metadata_for_region("DE")
+        metadata = phoneutil.get_metadata_for_region("DE")
         self.assertEquals("DE", metadata.id)
         self.assertEquals(49, metadata.country_code)
         self.assertEquals("00", metadata.international_prefix)
@@ -83,7 +83,7 @@ class PhoneNumberUtilTest(unittest.TestCase):
                 metadata.premium_rate.national_number_pattern)
 
     def test_get_instance_load_AR_metadata(self):
-        metadata = phonenumberutil.get_metadata_for_region("AR")
+        metadata = phoneutil.get_metadata_for_region("AR")
         self.assertEquals("AR", metadata.id)
         self.assertEquals(54, metadata.country_code)
         self.assertEquals("00", metadata.international_prefix)
@@ -105,49 +105,49 @@ class PhoneNumberUtilTest(unittest.TestCase):
         number.country_code = 1
         number.national_number = 6502530000
         self.assertEquals(3, 
-            phonenumberutil.get_length_of_geographical_area_code(number))
+            phoneutil.get_length_of_geographical_area_code(number))
 
         # A North America toll-free number, which has no area code.
         number.country_code = 1
         number.national_number = 8002530000
         self.assertEquals(0, 
-            phonenumberutil.get_length_of_geographical_area_code(number))
+            phoneutil.get_length_of_geographical_area_code(number))
         
         # An invalid US number (1 digit shorter), which has no area code.
         number.country_code = 1
         number.national_number = 650253000
         self.assertEquals(0, 
-            phonenumberutil.get_length_of_geographical_area_code(number))
+            phoneutil.get_length_of_geographical_area_code(number))
         
-#        # Google London, which has area code "20".
-#        number.country_code = 44
-#        number.national_number = 2070313000
-#        self.assertEquals(2, 
-#            phonenumberutil.get_length_of_geographical_area_code(number))
-#        
-#        # A UK mobile phone, which has no area code.
-#        number.country_code = 44
-#        number.national_number = 7123456789
-#        self.assertEquals(0, 
-#            phonenumberutil.get_length_of_geographical_area_code(number))
-#        
-#        # Google Buenos Aires, which has area code "11".
-#        number.country_code = 54
-#        number.national_number = 1155303000
-#        self.assertEquals(2, 
-#            phonenumberutil.get_length_of_geographical_area_code(number))
-#        
-#        # Google Sydney, which has area code "2".
-#        number.country_code = 61
-#        number.national_number = 293744000
-#        self.assertEquals(1, 
-#            phonenumberutil.get_length_of_geographical_area_code(number))
-#        
-#        # Google Singapore. Singapore has no area code and no national prefix.
-#        number.country_code = 65
-#        number.national_number = 65218000
-#        self.assertEquals(0, 
-#            phonenumberutil.get_length_of_geographical_area_code(number))
+        # Google London, which has area code "20".
+        number.country_code = 44
+        number.national_number = 2070313000
+        self.assertEquals(2, 
+            phoneutil.get_length_of_geographical_area_code(number))
+        
+        # A UK mobile phone, which has no area code.
+        number.country_code = 44
+        number.national_number = 7123456789
+        self.assertEquals(0, 
+            phoneutil.get_length_of_geographical_area_code(number))
+        
+        # Google Buenos Aires, which has area code "11".
+        number.country_code = 54
+        number.national_number = 1155303000
+        self.assertEquals(2, 
+            phoneutil.get_length_of_geographical_area_code(number))
+        
+        # # Google Sydney, which has area code "2".
+        # number.country_code = 61
+        # number.national_number = 293744000
+        # self.assertEquals(1, 
+        #     phoneutil.get_length_of_geographical_area_code(number))
+        
+        # # Google Singapore. Singapore has no area code and no national prefix.
+        # number.country_code = 65
+        # number.national_number = 65218000
+        # self.assertEquals(0, 
+        #     phoneutil.get_length_of_geographical_area_code(number))
 
 
 if __name__ == "__main__":
